@@ -104,9 +104,46 @@ All 6 NPCs have 3 dialogue lines each in `NPC_CONFIGS`. Format:
 
 ---
 
+## Systems Added (Phase 3 partial)
+
+### `src/systems/GameState.ts` (singleton: `gameState`)
+- `level`, `xp`, `xpToNext`, `hp`, `maxHp`, `gold`, `talkedTo: Set<string>`
+- `quests[]` — 2 quests: `order-meal` (active), `meet-everyone` (unlocks after)
+- `talkToNPC(id)` → `{ xpGained, objectiveComplete, questComplete, leveledUp, newLevel }`
+- Objective IDs match NPC IDs (e.g. `'uncle-lee'` → objective `'uncle-lee'`)
+
+### HUD elements (all `setScrollFactor(0)`, depth 100)
+- **Status panel** (8,8): level badge circle, HP bar (red→yellow→green), XP bar (gold), gold counter
+- **Quest tracker** (790,8): active quest title + up to 4 objective rows with ○/✓ indicators
+- **Bottom hotbar** (centered, y=588): 6 placeholder item slots
+
+### Dialogue box (redesigned)
+- Size: 600×118px at (180, 464) — above hotbar
+- Left panel (80px): NPC portrait — coloured bg + Chinese name character (`portraitColor` per NPC)
+- Right panel: name tab, role label, body text
+- `openDialogue(i)` draws portrait dynamically with `portraitColor` from NpcConfig
+
+### NPC portrait colours
+| NPC | portraitColor |
+|-----|--------------|
+| Uncle Lee | 0xc0392b (dark red) |
+| Auntie Tan | 0xe67e22 (orange) |
+| Uncle Rajan | 0x2980b9 (blue) |
+| Grandma Wong | 0x8e44ad (purple) |
+| Uncle Hassan | 0x27ae60 (green) |
+| Auntie Siew | 0xd35400 (burnt orange) |
+
+### Notification popups (depth 200–205)
+- `showXPGain(n)` — floating "+N XP" text
+- `showObjectiveComplete(obj)` — green banner at top
+- `showQuestComplete(quest)` — centred modal with rewards
+- `showLevelUp(level)` — animated level-up popup
+
+---
+
 ## Next Development Phases
 
-### Phase 3: Quest System
+### Phase 3 (remaining): Battle trigger from dialogue
 - File: `src/systems/QuestManager.ts`
 - Quest types: `talk_to_npc`, `win_battle`, `collect_item`, `enter_zone`
 - 3 starter quests: "Order a meal", "Find the best drink", "Help the auntie"
