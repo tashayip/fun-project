@@ -379,36 +379,38 @@ export class WorldScene extends Phaser.Scene {
   }
 
   // ─── Status Panel ─────────────────────────────────────────────────────────
-  // Container at world (4,4) → canvas (8,8). Size: 200w×58h → 400×116 canvas px
+  // Container at world (6,6) → canvas (12,12). Size: 130w×50h → 260×100 canvas px
   private createStatusPanel() {
-    const W=200, H=58
+    const W=130, H=50
 
     const panelBg = this.add.graphics()
-    panelBg.fillStyle(0x050f05,0.92).fillRoundedRect(0,0,W,H,5)
-    panelBg.lineStyle(1.5,0xf5c842,0.85).strokeRoundedRect(0,0,W,H,5)
-    panelBg.lineStyle(1,0xf5c842,0.2).strokeRoundedRect(2,2,W-4,H-4,4)
+    panelBg.fillStyle(0x0d1a0d,0.93).fillRoundedRect(0,0,W,H,4)
+    panelBg.lineStyle(2,0xf5c842,1).strokeRoundedRect(0,0,W,H,4)
 
+    // Level badge circle
     const lvlBg = this.add.graphics()
-    lvlBg.fillStyle(0xf5c842,1).fillCircle(18,H/2,14)
-    lvlBg.lineStyle(1.5,0x7c3a00,1).strokeCircle(18,H/2,14)
+    lvlBg.fillStyle(0xf5c842,1).fillCircle(17,25,13)
+    const lvlCaption = this.add.text(17,13,'LV',{fontFamily:'VT323',fontSize:'8px',color:'#5a2a00'}).setOrigin(0.5,0)
+    this.levelBadgeText = this.add.text(17,26,'1',{fontFamily:'VT323',fontSize:'16px',color:'#1a0600'}).setOrigin(0.5,0.5)
 
-    this.levelBadgeText = this.add.text(18,H/2,'1',{fontFamily:'Press Start 2P',fontSize:'7px',color:'#1a0600'}).setOrigin(0.5)
-
-    const hpLabel = this.add.text(37,8,'HP',{fontFamily:'Press Start 2P',fontSize:'5px',color:'#ff8888'})
+    // HP row — bar sits at local (50,8) size (74,11) → canvas 148×22
+    const hpLabel = this.add.text(35,7,'HP',{fontFamily:'VT323',fontSize:'13px',color:'#ff8888'})
     const hpBg = this.add.graphics()
-    hpBg.fillStyle(0x3a0f0f,1).fillRoundedRect(50,7,140,13,2)
+    hpBg.fillStyle(0x3a0f0f,1).fillRoundedRect(50,8,74,11,2)
     this.hpBarFill = this.add.graphics()
-    this.hpValueText = this.add.text(195,7,'',{fontFamily:'VT323',fontSize:'11px',color:'#ffaaaa'}).setOrigin(1,0)
+    this.hpValueText = this.add.text(126,8,'',{fontFamily:'VT323',fontSize:'11px',color:'#ffcccc'}).setOrigin(1,0)
 
-    const xpLabel = this.add.text(37,25,'XP',{fontFamily:'Press Start 2P',fontSize:'5px',color:'#f5c842'})
+    // XP row
+    const xpLabel = this.add.text(35,22,'XP',{fontFamily:'VT323',fontSize:'13px',color:'#f5c842'})
     const xpBg = this.add.graphics()
-    xpBg.fillStyle(0x2a2000,1).fillRoundedRect(50,24,140,13,2)
+    xpBg.fillStyle(0x2a2000,1).fillRoundedRect(50,23,74,11,2)
     this.xpBarFill = this.add.graphics()
-    this.xpValueText = this.add.text(195,24,'',{fontFamily:'VT323',fontSize:'11px',color:'#f5c842'}).setOrigin(1,0)
+    this.xpValueText = this.add.text(126,23,'',{fontFamily:'VT323',fontSize:'11px',color:'#ffe088'}).setOrigin(1,0)
 
-    this.goldText = this.add.text(37,41,'',{fontFamily:'Press Start 2P',fontSize:'5px',color:'#f5c842'})
+    // Gold
+    this.goldText = this.add.text(35,37,'',{fontFamily:'VT323',fontSize:'13px',color:'#f5c842'})
 
-    const panel = this.add.container(4,4,[panelBg,lvlBg,this.levelBadgeText,hpLabel,hpBg,this.hpBarFill,this.hpValueText,xpLabel,xpBg,this.xpBarFill,this.xpValueText,this.goldText])
+    const panel = this.add.container(6,6,[panelBg,lvlBg,lvlCaption,this.levelBadgeText,hpLabel,hpBg,this.hpBarFill,this.hpValueText,xpLabel,xpBg,this.xpBarFill,this.xpValueText,this.goldText])
     panel.setScrollFactor(0).setDepth(100)
     this.redrawStatusBars()
   }
@@ -419,45 +421,43 @@ export class WorldScene extends Phaser.Scene {
     const hp = gs.hp/gs.maxHp
     if (hp>0){
       const col = hp>0.5?0x44cc44:hp>0.25?0xf5c842:0xff4444
-      this.hpBarFill.fillStyle(col,1).fillRoundedRect(50,7,140*hp,13,2)
-      this.hpBarFill.fillStyle(0xffffff,0.18).fillRect(50,7,140*hp,4)
+      this.hpBarFill.fillStyle(col,1).fillRoundedRect(50,8,74*hp,11,2)
     }
     this.hpValueText.setText(`${gs.hp}/${gs.maxHp}`)
 
     this.xpBarFill.clear()
     const xp = gs.xp/gs.xpToNext
     if (xp>0){
-      this.xpBarFill.fillStyle(0xf5c842,1).fillRoundedRect(50,24,140*xp,13,2)
-      this.xpBarFill.fillStyle(0xffffff,0.18).fillRect(50,24,140*xp,4)
+      this.xpBarFill.fillStyle(0xf5c842,1).fillRoundedRect(50,23,74*xp,11,2)
     }
-    this.xpValueText.setText(`${gs.xp}/${gs.xpToNext} XP`)
+    this.xpValueText.setText(`${gs.xp}/${gs.xpToNext}`)
     this.levelBadgeText.setText(`${gs.level}`)
-    this.goldText.setText(`GOLD  ${gs.gold}`)
+    this.goldText.setText(`G  ${gs.gold}`)
   }
 
   // ─── Quest Tracker ────────────────────────────────────────────────────────
-  // Container at world (346,4) → canvas (692,8). Panel 130w×110h → 260×220 canvas px
+  // Container at world (360,6) → canvas (720,12). Panel 114w×72h → 228×144 canvas px
   private createQuestTracker() {
-    const PW=130, PH=110
+    const PW=114, PH=72
 
     const bg = this.add.graphics()
-    bg.fillStyle(0x050f05,0.90).fillRoundedRect(0,0,PW,PH,5)
-    bg.lineStyle(1.5,0x44dd44,0.75).strokeRoundedRect(0,0,PW,PH,5)
+    bg.fillStyle(0x0d1a0d,0.93).fillRoundedRect(0,0,PW,PH,4)
+    bg.lineStyle(2,0x44dd44,1).strokeRoundedRect(0,0,PW,PH,4)
 
-    const header = this.add.text(PW/2,6,'─ QUEST ─',{fontFamily:'Press Start 2P',fontSize:'5px',color:'#44dd44',align:'center'}).setOrigin(0.5,0)
-    this.questTitleEn = this.add.text(PW/2,17,'',{fontFamily:'Press Start 2P',fontSize:'5px',color:'#ffffff',align:'center',wordWrap:{width:PW-12}}).setOrigin(0.5,0)
-    this.questTitleZh = this.add.text(PW/2,32,'',{fontFamily:'VT323',fontSize:'13px',color:'#f5c842',align:'center'}).setOrigin(0.5,0)
+    const header = this.add.text(PW/2,5,'QUEST',{fontFamily:'VT323',fontSize:'13px',color:'#44ff44',align:'center'}).setOrigin(0.5,0)
+    this.questTitleEn = this.add.text(PW/2,18,'',{fontFamily:'VT323',fontSize:'14px',color:'#ffffff',align:'center',wordWrap:{width:PW-8}}).setOrigin(0.5,0)
+    this.questTitleZh = this.add.text(PW/2,30,'',{fontFamily:'VT323',fontSize:'13px',color:'#f5c842',align:'center'}).setOrigin(0.5,0)
 
     const divider = this.add.graphics()
-    divider.lineStyle(1,0x1a4a1a,1).beginPath().moveTo(6,46).lineTo(PW-6,46).strokePath()
+    divider.lineStyle(1,0x224422,1).beginPath().moveTo(6,43).lineTo(PW-6,43).strokePath()
 
     this.questObjTexts = []
     for (let i=0;i<4;i++){
-      const t = this.add.text(6,50+i*15,'',{fontFamily:'VT323',fontSize:'11px',color:'#cccccc',wordWrap:{width:PW-12}})
+      const t = this.add.text(6,47+i*6,'',{fontFamily:'VT323',fontSize:'10px',color:'#cccccc',wordWrap:{width:PW-12}})
       this.questObjTexts.push(t)
     }
 
-    this.questContainer = this.add.container(346,4,[bg,header,this.questTitleEn,this.questTitleZh,divider,...this.questObjTexts])
+    this.questContainer = this.add.container(360,6,[bg,header,this.questTitleEn,this.questTitleZh,divider,...this.questObjTexts])
     this.questContainer.setScrollFactor(0).setDepth(100)
     this.updateQuestTracker()
   }
@@ -477,34 +477,34 @@ export class WorldScene extends Phaser.Scene {
   }
 
   // ─── Bottom Hotbar ────────────────────────────────────────────────────────
-  // 6 slots × 22w world → 44px canvas each; container at (169, 295) → canvas (338, 590)
+  // 6 slots × 24w world → 48px canvas each; container centered at y=293 world → y=586 canvas
   private createBottomHotbar() {
-    const slotW=22, gap=2, slots=6
-    const totalW = slots*slotW+(slots-1)*gap  // 142 world → 284 canvas
+    const slotW=24, gap=3, slots=6
+    const totalW = slots*slotW+(slots-1)*gap  // 159 world → 318 canvas
+
     const barBg = this.add.graphics()
-    barBg.fillStyle(0x050f05,0.88).fillRoundedRect(-5,-4,totalW+10,slotW+8,4)
-    barBg.lineStyle(1,0x1a4a1a,0.9).strokeRoundedRect(-5,-4,totalW+10,slotW+8,4)
+    barBg.fillStyle(0x0d1a0d,0.90).fillRoundedRect(-6,-5,totalW+12,slotW+10,4)
+    barBg.lineStyle(1.5,0x224422,1).strokeRoundedRect(-6,-5,totalW+12,slotW+10,4)
 
     const children: Phaser.GameObjects.GameObject[] = [barBg]
     for (let i=0;i<slots;i++){
       const sx=i*(slotW+gap)
       const s = this.add.graphics()
-      s.fillStyle(0x0d2a0d,1).fillRoundedRect(sx,0,slotW,slotW,2)
-      s.lineStyle(0.5,0x2a5a2a,1).strokeRoundedRect(sx,0,slotW,slotW,2)
+      s.fillStyle(0x0a1a0a,1).fillRoundedRect(sx,0,slotW,slotW,2)
+      s.lineStyle(1,0x2a5a2a,1).strokeRoundedRect(sx,0,slotW,slotW,2)
       children.push(s)
-      children.push(this.add.text(sx+slotW-2,slotW-2,`${i+1}`,{fontFamily:'VT323',fontSize:'7px',color:'#2a5a2a'}).setOrigin(1,1))
+      children.push(this.add.text(sx+slotW-2,slotW-2,`${i+1}`,{fontFamily:'VT323',fontSize:'8px',color:'#2a5a2a'}).setOrigin(1,1))
     }
-    // world y = (640 - (22+8)*2 - 6) / 2 = (640-60-6)/2 = 287
-    const hotbar = this.add.container((480-totalW)/2, 287, children)
+    // y: canvas target 590 → world 295; x: centered
+    const hotbar = this.add.container((480-totalW)/2, 293, children)
     hotbar.setScrollFactor(0).setDepth(100)
 
-    const hint = this.add.text(240,312,'WASD / Arrows  ·  E or Space to talk',{fontFamily:'VT323',fontSize:'9px',color:'#333333',align:'center'}).setOrigin(0.5,1).setScrollFactor(0).setDepth(99)
+    const hint = this.add.text(240,308,'WASD / Arrows  ·  E or Space to talk',{fontFamily:'VT323',fontSize:'10px',color:'#446644',align:'center'}).setOrigin(0.5,1).setScrollFactor(0).setDepth(99)
     this.tweens.add({targets:hint,alpha:0,duration:1200,delay:5000})
   }
 
   // ─── Ambient Effects ──────────────────────────────────────────────────────
   private createAmbientEffects() {
-    this.add.particles(0,0,'grass',{x:{min:0,max:this.MAP_W},y:{min:0,max:this.MAP_H},scale:{start:0.3,end:0},alpha:{start:0.3,end:0},speed:{min:5,max:15},angle:{min:260,max:280},lifespan:4000,frequency:300,quantity:1}).setDepth(50)
     this.add.graphics().fillStyle(0xffcc66,0.03).fillRect(0,0,this.MAP_W,this.MAP_H).setDepth(1)
 
     const eBg = this.add.graphics()
@@ -633,44 +633,60 @@ export class WorldScene extends Phaser.Scene {
 
   // ─── Notifications (world coords, scrollFactor(0)) ────────────────────────
   private showXPGain(amount: number) {
-    // Canvas (480, 400) → world (240, 200)
-    const t = this.add.text(240,200,`+${amount} XP`,{fontFamily:'Press Start 2P',fontSize:'8px',color:'#f5c842',stroke:'#000000',strokeThickness:2}).setOrigin(0.5).setScrollFactor(0).setDepth(200)
-    this.tweens.add({targets:t,y:175,alpha:0,duration:1400,ease:'Cubic.Out',onComplete:()=>t.destroy()})
+    // Large gold "+N XP" floats up from center-screen
+    const t = this.add.text(240,190,`+${amount} XP`,{
+      fontFamily:'VT323',fontSize:'22px',color:'#f5c842',stroke:'#000000',strokeThickness:3
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(200)
+    this.tweens.add({targets:t,y:160,alpha:0,duration:1600,ease:'Cubic.Out',onComplete:()=>t.destroy()})
   }
 
   private showObjectiveComplete(obj: QuestObjective) {
-    // Banner: canvas (160,88) size (640,46) → world (80,44) size (320,23)
+    // Green banner at top-center: canvas (120,80) size (720,44) → world (60,40) size (360,22)
     const bg=this.add.graphics().setScrollFactor(0).setDepth(200)
-    bg.fillStyle(0x050f05,0.92).fillRoundedRect(80,44,320,23,3)
-    bg.lineStyle(1.5,0x44ff44,1).strokeRoundedRect(80,44,320,23,3)
-    const t=this.add.text(240,55,`✓  ${obj.descZh}`,{fontFamily:'VT323',fontSize:'14px',color:'#44ff44',align:'center'}).setOrigin(0.5).setScrollFactor(0).setDepth(201)
+    bg.fillStyle(0x031a03,0.95).fillRoundedRect(60,40,360,22,3)
+    bg.lineStyle(2,0x44ff44,1).strokeRoundedRect(60,40,360,22,3)
+    const t=this.add.text(240,51,`✓  OBJECTIVE: ${obj.descZh}`,{
+      fontFamily:'VT323',fontSize:'14px',color:'#44ff44',align:'center'
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(201)
     const all=[bg,t]
-    this.tweens.add({targets:all,alpha:{from:0,to:1},duration:180,onComplete:()=>
-      this.time.delayedCall(2000,()=>this.tweens.add({targets:all,alpha:0,duration:400,onComplete:()=>all.forEach(o=>o.destroy())}))})
+    this.tweens.add({targets:all,alpha:{from:0,to:1},duration:200,onComplete:()=>
+      this.time.delayedCall(2500,()=>this.tweens.add({targets:all,alpha:0,duration:400,onComplete:()=>all.forEach(o=>o.destroy())}))})
   }
 
   private showQuestComplete(quest: Quest) {
-    // Modal: canvas (180,210) size (600,140) → world (90,105) size (300,70)
+    // Modal: canvas (140,180) size (680,160) → world (70,90) size (340,80)
     const bg=this.add.graphics().setScrollFactor(0).setDepth(202)
-    bg.fillStyle(0x050f05,0.96).fillRoundedRect(90,105,300,70,5)
-    bg.lineStyle(2,0xf5c842,1).strokeRoundedRect(90,105,300,70,5)
-    const title=this.add.text(240,120,'✦  QUEST COMPLETE!  ✦',{fontFamily:'Press Start 2P',fontSize:'8px',color:'#f5c842',stroke:'#000000',strokeThickness:2,align:'center'}).setOrigin(0.5).setScrollFactor(0).setDepth(203)
-    const name=this.add.text(240,138,`${quest.titleZh} — ${quest.title}`,{fontFamily:'VT323',fontSize:'14px',color:'#ffffff',align:'center'}).setOrigin(0.5).setScrollFactor(0).setDepth(203)
-    const rew=this.add.text(240,155,`+${quest.xpReward} XP   +${quest.goldReward} Gold   New quest unlocked!`,{fontFamily:'VT323',fontSize:'11px',color:'#f5c842',align:'center'}).setOrigin(0.5).setScrollFactor(0).setDepth(203)
+    bg.fillStyle(0x031a03,0.97).fillRoundedRect(70,90,340,80,6)
+    bg.lineStyle(3,0xf5c842,1).strokeRoundedRect(70,90,340,80,6)
+    bg.lineStyle(1,0xf5c842,0.3).strokeRoundedRect(73,93,334,74,5)
+    const title=this.add.text(240,106,'✦  QUEST COMPLETE!  ✦',{
+      fontFamily:'VT323',fontSize:'18px',color:'#f5c842',stroke:'#000000',strokeThickness:2,align:'center'
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(203)
+    const name=this.add.text(240,124,`${quest.titleZh} · ${quest.title}`,{
+      fontFamily:'VT323',fontSize:'15px',color:'#ffffff',align:'center'
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(203)
+    const rew=this.add.text(240,143,`+${quest.xpReward} XP  +${quest.goldReward} Gold  ·  New quest unlocked!`,{
+      fontFamily:'VT323',fontSize:'13px',color:'#aaffaa',align:'center'
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(203)
     const all=[bg,title,name,rew]
-    this.tweens.add({targets:all,alpha:{from:0,to:1},duration:350,ease:'Back.Out',onComplete:()=>
-      this.time.delayedCall(3000,()=>this.tweens.add({targets:all,alpha:0,duration:500,onComplete:()=>all.forEach(o=>o.destroy())}))})
+    this.tweens.add({targets:all,alpha:{from:0,to:1},scaleX:{from:0.9,to:1},scaleY:{from:0.9,to:1},duration:350,ease:'Back.Out',onComplete:()=>
+      this.time.delayedCall(3500,()=>this.tweens.add({targets:all,alpha:0,duration:500,onComplete:()=>all.forEach(o=>o.destroy())}))})
   }
 
   private showLevelUp(level: number) {
-    // Popup: canvas (240,248) size (480,90) → world (120,124) size (240,45)
+    // Exciting popup: canvas (160,220) size (640,100) → world (80,110) size (320,50)
     const bg=this.add.graphics().setScrollFactor(0).setDepth(204)
-    bg.fillStyle(0x000000,0.75).fillRoundedRect(120,124,240,45,5)
-    bg.lineStyle(2,0xf5c842,1).strokeRoundedRect(120,124,240,45,5)
-    const t=this.add.text(240,141,`★  LEVEL UP!  Lv.${level}  ★`,{fontFamily:'Press Start 2P',fontSize:'9px',color:'#f5c842',stroke:'#000000',strokeThickness:3,align:'center'}).setOrigin(0.5).setScrollFactor(0).setDepth(205)
-    const s=this.add.text(240,157,'HP +10  ·  Keep exploring!',{fontFamily:'VT323',fontSize:'13px',color:'#ffffff',align:'center'}).setOrigin(0.5).setScrollFactor(0).setDepth(205)
+    bg.fillStyle(0x1a1000,0.97).fillRoundedRect(80,110,320,50,6)
+    bg.lineStyle(3,0xf5c842,1).strokeRoundedRect(80,110,320,50,6)
+    bg.lineStyle(1,0xf5c842,0.4).strokeRoundedRect(83,113,314,44,5)
+    const t=this.add.text(240,126,`★  LEVEL UP!  Lv.${level}  ★`,{
+      fontFamily:'VT323',fontSize:'20px',color:'#f5c842',stroke:'#000000',strokeThickness:3,align:'center'
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(205)
+    const s=this.add.text(240,146,'HP +10 · Max HP increased!',{
+      fontFamily:'VT323',fontSize:'14px',color:'#ffffff',align:'center'
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(205)
     const all=[bg,t,s]
-    this.tweens.add({targets:all,alpha:{from:0,to:1},scaleX:{from:0.85,to:1},scaleY:{from:0.85,to:1},duration:300,ease:'Back.Out',onComplete:()=>
-      this.time.delayedCall(2200,()=>this.tweens.add({targets:all,alpha:0,duration:450,onComplete:()=>all.forEach(o=>o.destroy())}))})
+    this.tweens.add({targets:all,alpha:{from:0,to:1},scaleX:{from:0.8,to:1},scaleY:{from:0.8,to:1},duration:350,ease:'Back.Out',onComplete:()=>
+      this.time.delayedCall(2500,()=>this.tweens.add({targets:all,alpha:0,duration:450,onComplete:()=>all.forEach(o=>o.destroy())}))})
   }
 }
