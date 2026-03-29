@@ -16,12 +16,30 @@ interface NpcConfig {
 }
 
 const NPC_CONFIGS: NpcConfig[] = [
-  { id: 'uncle-lee',    x: 180, y: 210, tint: 0xffe0c8, portraitColor: 0xc0392b, name: 'Uncle Lee',    role: 'Noodle Stall',  nameZh: '李叔叔',   wanderRadius: 24, dialogues: ['你好！要吃什么？(Nǐ hǎo! Yào chī shénme?)', '我这里有很好吃的面条！(Wǒ zhèlǐ yǒu hěn hào chī de miàntiáo!)', '干捞面还是汤面？(Gān lāo miàn háishi tāng miàn?)'] },
-  { id: 'auntie-tan',   x: 390, y: 210, tint: 0xffd0e0, portraitColor: 0xe67e22, name: 'Auntie Tan',   role: 'Rice Stall',    nameZh: '陈阿姨',   wanderRadius: 20, dialogues: ['你好！要白饭还是炒饭？(Nǐ hǎo! Yào báifàn háishi chǎofàn?)', '我的鸡肉饭很受欢迎！(Wǒ de jīròu fàn hěn shòu huānyíng!)', '一份多少钱？三块五。(Yī fèn duōshao qián? Sān kuài wǔ.)'] },
-  { id: 'uncle-rajan',  x: 600, y: 210, tint: 0xd0e8ff, portraitColor: 0x2980b9, name: 'Uncle Rajan',  role: 'Drink Stall',   nameZh: '拉詹叔叔', wanderRadius: 28, dialogues: ['你好！要喝什么？(Nǐ hǎo! Yào hē shénme?)', '我有糖水，豆浆，和咖啡！(Wǒ yǒu tángshuǐ, dòujiāng, hé kāfēi!)', '冰的还是热的？(Bīng de háishi rè de?)'] },
-  { id: 'grandma-wong', x: 810, y: 210, tint: 0xfffff0, portraitColor: 0x8e44ad, name: 'Grandma Wong', role: 'Dessert Stall', nameZh: '王奶奶',   wanderRadius: 16, dialogues: ['你好啊小朋友！(Nǐ hǎo a xiǎo péngyǒu!)', '要吃汤圆吗？很甜很好吃！(Yào chī tāngyuán ma? Hěn tián hěn hào chī!)', '祖母给你打折！(Zǔmǔ gěi nǐ dǎzhé!)'] },
-  { id: 'uncle-hassan', x: 240, y: 500, tint: 0xd0ffe8, portraitColor: 0x27ae60, name: 'Uncle Hassan', role: 'Satay Stall',   nameZh: '哈山叔叔', wanderRadius: 30, dialogues: ['你好！要沙爹吗？(Nǐ hǎo! Yào shādié ma?)', '鸡肉，牛肉，还是猪肉？(Jīròu, niúròu, háishi zhūròu?)', '我的沙爹是最好吃的！(Wǒ de shādié shì zuì hào chī de!)'] },
-  { id: 'auntie-siew',  x: 450, y: 500, tint: 0xecd8ff, portraitColor: 0xd35400, name: 'Auntie Siew',  role: 'Soup Stall',    nameZh: '小阿姨',   wanderRadius: 22, dialogues: ['你好！今天要喝什么汤？(Nǐ hǎo! Jīntiān yào hē shénme tāng?)', '骨头汤很滋补！(Gǔtou tāng hěn zībǔ!)', '要加辣椒吗？(Yào jiā làjiāo ma?)'] },
+  { id: 'uncle-lee',    x: 180, y: 210, tint: 0xffe0c8, portraitColor: 0xc0392b, name: 'Uncle Lee',    role: 'Noodle Stall',  nameZh: '李叔叔',   wanderRadius: 24, dialogues: [
+    '你好！要吃什么？\nNǐ hǎo! Yào chī shénme?',
+    '我这里有很好吃的面条！\nWǒ zhèlǐ yǒu hěn hào chī de miàntiáo!',
+    '干捞面还是汤面？\nGān lāo miàn háishi tāng miàn?'] },
+  { id: 'auntie-tan',   x: 390, y: 210, tint: 0xffd0e0, portraitColor: 0xe67e22, name: 'Auntie Tan',   role: 'Rice Stall',    nameZh: '陈阿姨',   wanderRadius: 20, dialogues: [
+    '你好！要白饭还是炒饭？\nNǐ hǎo! Yào báifàn háishi chǎofàn?',
+    '我的鸡肉饭很受欢迎！\nWǒ de jīròu fàn hěn shòu huānyíng!',
+    '一份多少钱？三块五。\nYī fèn duōshao qián? Sān kuài wǔ.'] },
+  { id: 'uncle-rajan',  x: 600, y: 210, tint: 0xd0e8ff, portraitColor: 0x2980b9, name: 'Uncle Rajan',  role: 'Drink Stall',   nameZh: '拉詹叔叔', wanderRadius: 28, dialogues: [
+    '你好！要喝什么？\nNǐ hǎo! Yào hē shénme?',
+    '我有糖水，豆浆，和咖啡！\nWǒ yǒu tángshuǐ, dòujiāng, hé kāfēi!',
+    '冰的还是热的？\nBīng de háishi rè de?'] },
+  { id: 'grandma-wong', x: 810, y: 210, tint: 0xfffff0, portraitColor: 0x8e44ad, name: 'Grandma Wong', role: 'Dessert Stall', nameZh: '王奶奶',   wanderRadius: 16, dialogues: [
+    '你好啊小朋友！\nNǐ hǎo a xiǎo péngyǒu!',
+    '要吃汤圆吗？很甜很好吃！\nYào chī tāngyuán ma? Hěn tián hěn hào chī!',
+    '祖母给你打折！\nZǔmǔ gěi nǐ dǎzhé!'] },
+  { id: 'uncle-hassan', x: 240, y: 500, tint: 0xd0ffe8, portraitColor: 0x27ae60, name: 'Uncle Hassan', role: 'Satay Stall',   nameZh: '哈山叔叔', wanderRadius: 30, dialogues: [
+    '你好！要沙爹吗？\nNǐ hǎo! Yào shādié ma?',
+    '鸡肉，牛肉，还是猪肉？\nJīròu, niúròu, háishi zhūròu?',
+    '我的沙爹是最好吃的！\nWǒ de shādié shì zuì hào chī de!'] },
+  { id: 'auntie-siew',  x: 450, y: 500, tint: 0xecd8ff, portraitColor: 0xd35400, name: 'Auntie Siew',  role: 'Soup Stall',    nameZh: '小阿姨',   wanderRadius: 22, dialogues: [
+    '你好！今天要喝什么汤？\nNǐ hǎo! Jīntiān yào hē shénme tāng?',
+    '骨头汤很滋补！\nGǔtou tāng hěn zībǔ!',
+    '要加辣椒吗？\nYào jiā làjiāo ma?'] },
 ]
 
 interface AnimalConfig { key: string; x: number; y: number; scale: number; wanderRadius: number; speed: number }
@@ -339,7 +357,10 @@ export class WorldScene extends Phaser.Scene {
   // ─── Dialogue Box ─────────────────────────────────────────────────────────
   // Box: 420w × 86h world → 840×172 canvas px, portrait 54w
   private createDialogueBox() {
-    const boxW = 420, boxH = 86, portW = 54
+    // Canvas target: x=40→920 (880px wide), y=362→538 (176px tall)
+    // World: x=20, y=181, w=440, h=88
+    // Hotbar barBg top is canvas 566 — gap = 566-538 = 28px. Clear.
+    const boxW = 440, boxH = 88, portW = 50
 
     const bg = this.add.graphics()
     bg.fillStyle(0x050f0a,0.96).fillRoundedRect(0,0,boxW,boxH,5)
@@ -349,24 +370,24 @@ export class WorldScene extends Phaser.Scene {
     this.dialoguePortraitBg = this.add.graphics()
 
     this.dialoguePortraitChar = this.add.text(portW/2,boxH/2,'',{
-      fontFamily:'Press Start 2P',fontSize:'16px',color:'#ffffff',stroke:'#000000',strokeThickness:3
+      fontFamily:'VT323',fontSize:'18px',color:'#ffffff',stroke:'#000000',strokeThickness:2
     }).setOrigin(0.5)
 
     const sep = this.add.graphics()
     sep.lineStyle(1,0x1a4a1a,1)
     sep.beginPath().moveTo(portW+4,5).lineTo(portW+4,boxH-5).strokePath()
 
-    // Name tab — sits above the box, anchored to right of portrait
+    // Name tab above box
     const nameBg = this.add.graphics()
-    nameBg.fillStyle(0x0a2a0a,1).fillRoundedRect(portW+6,-14,160,18,3)
-    nameBg.lineStyle(1.5,0x44dd44,1).strokeRoundedRect(portW+6,-14,160,18,3)
+    nameBg.fillStyle(0x0a2a0a,1).fillRoundedRect(portW+6,-14,170,18,3)
+    nameBg.lineStyle(1.5,0x44dd44,1).strokeRoundedRect(portW+6,-14,170,18,3)
 
     const nameText = this.add.text(portW+10,-11,'',{fontFamily:'VT323',fontSize:'14px',color:'#88ff88'})
-    const roleText = this.add.text(portW+170,-11,'',{fontFamily:'VT323',fontSize:'11px',color:'#888888'})
+    const roleText = this.add.text(portW+180,-11,'',{fontFamily:'VT323',fontSize:'11px',color:'#888888'})
 
-    const bodyText = this.add.text(portW+8,8,'',{
-      fontFamily:'VT323',fontSize:'15px',color:'#e8f8e8',
-      wordWrap:{width:boxW-portW-18},lineSpacing:2
+    const bodyText = this.add.text(portW+8,7,'',{
+      fontFamily:'VT323, serif',fontSize:'15px',color:'#e8f8e8',
+      wordWrap:{width:boxW-portW-16},lineSpacing:3
     })
 
     const hint = this.add.text(boxW-6,boxH-5,'Space / E',{fontFamily:'VT323',fontSize:'9px',color:'#336633'}).setOrigin(1,1)
@@ -495,11 +516,11 @@ export class WorldScene extends Phaser.Scene {
       children.push(s)
       children.push(this.add.text(sx+slotW-2,slotW-2,`${i+1}`,{fontFamily:'VT323',fontSize:'8px',color:'#2a5a2a'}).setOrigin(1,1))
     }
-    // y: canvas target 590 → world 295; x: centered
-    const hotbar = this.add.container((480-totalW)/2, 293, children)
+    // y=288 world → canvas 576. barBg local offset -5 → canvas top 566. barBg height 34w → 68c → bottom 634. Within 640 canvas.
+    const hotbar = this.add.container((480-totalW)/2, 288, children)
     hotbar.setScrollFactor(0).setDepth(100)
 
-    const hint = this.add.text(240,308,'WASD / Arrows  ·  E or Space to talk',{fontFamily:'VT323',fontSize:'10px',color:'#446644',align:'center'}).setOrigin(0.5,1).setScrollFactor(0).setDepth(99)
+    const hint = this.add.text(240,281,'WASD / Arrows  ·  E or Space to talk',{fontFamily:'VT323',fontSize:'10px',color:'#446644',align:'center'}).setOrigin(0.5,1).setScrollFactor(0).setDepth(99)
     this.tweens.add({targets:hint,alpha:0,duration:1200,delay:5000})
   }
 
@@ -596,7 +617,7 @@ export class WorldScene extends Phaser.Scene {
 
     this.dialogueBox.setVisible(true).setAlpha(0)
     this.positionDialogueBox()
-    this.tweens.add({targets:this.dialogueBox,alpha:1,y:{from:this.dialogueBox.y+6,to:this.dialogueBox.y},duration:200,ease:'Back.Out'})
+    this.tweens.add({targets:this.dialogueBox,alpha:1,duration:200})
   }
 
   private advanceDialogue() {
@@ -622,9 +643,9 @@ export class WorldScene extends Phaser.Scene {
   }
 
   private positionDialogueBox() {
-    // canvas_px = world_pos × 2. Target canvas: centered x=(960-840)/2=60, y=640-172-16=452
-    // World: x=30, y=226
-    this.dialogueBox.setPosition(30, 226)
+    // Canvas target: x=40 (40px left margin), y=362 (box ends at 538, hotbar barBg starts at 566 → 28px gap)
+    // World: x=20, y=181   (world = canvas / zoom2)
+    this.dialogueBox.setPosition(20, 181)
   }
 
   private updateDialogueBox() {
