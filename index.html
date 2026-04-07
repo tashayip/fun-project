@@ -852,17 +852,19 @@
           var menu = document.getElementById('splash-menu');
           if (!menu || menu.dataset.starting) return;
           menu.dataset.starting = '1';
+          var game = window.__phaserGame;
+          if (game) {
+            var ms = game.scene.getScene('MainMenuScene');
+            if (ms && game.scene.isActive('MainMenuScene')) {
+              game.scene.stop('MainMenuScene');
+            }
+            if (!game.scene.isActive('WorldScene')) {
+              game.scene.start('WorldScene');
+            }
+          }
           menu.classList.add('sp-hiding');
           setTimeout(function () {
             menu.style.display = 'none';
-            var game = window.__phaserGame;
-            if (game) {
-              var ms = game.scene.getScene('MainMenuScene');
-              if (ms && game.scene.isActive('MainMenuScene')) {
-                game.scene.stop('MainMenuScene');
-              }
-              game.scene.start('WorldScene');
-            }
           }, 520);
         }
 
