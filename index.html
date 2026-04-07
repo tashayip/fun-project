@@ -6,7 +6,7 @@
     <title>LangBuddy RPG — 学中文</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323:wght@400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Darumadrop+One&family=Press+Start+2P&family=VT323:wght@400&display=swap" rel="stylesheet">
     <style>
       /* ═══════════════════════════════════════════════════════════════
          GATEWAY 2000 CRT MONITOR — Pure CSS
@@ -392,6 +392,338 @@
         background: radial-gradient(ellipse at center, rgba(210,140,50,0.05) 0%, transparent 70%);
         pointer-events: none;
       }
+
+      /* ═══════════════════════════════════════════════════════════════
+         SPLASH MENU — CSS-only main menu overlay
+         ═══════════════════════════════════════════════════════════════ */
+
+      #splash-menu {
+        position: absolute;
+        inset: 0;
+        z-index: 30;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        transition: opacity 0.5s ease;
+        /* Sky gradient: deep blue at top → horizon warmth */
+        background: linear-gradient(180deg,
+          #1e7fc8 0%,
+          #3a9ee0 18%,
+          #60b8e8 36%,
+          #84cef0 52%,
+          #9ed8ee 64%,
+          #b4e0f0 74%,
+          #88c888 88%,
+          #5aaa58 100%
+        );
+      }
+
+      /* ── Clouds ─────────────────────────────────────────────────── */
+      .sp-cloud {
+        position: absolute;
+        background: #fff;
+        border-radius: 50%;
+        opacity: 0.88;
+      }
+      .sp-cloud::before, .sp-cloud::after {
+        content: '';
+        position: absolute;
+        background: #fff;
+        border-radius: 50%;
+      }
+
+      .sp-cloud-a { width:7%; height:0; padding-bottom:3.5%; top:5%; left:3%; }
+      .sp-cloud-a::before { width:150%; height:160%; top:-70%; left:20%; }
+      .sp-cloud-a::after  { width:90%;  height:100%; top:-30%; left:68%; }
+
+      .sp-cloud-b { width:10%; height:0; padding-bottom:4.5%; top:4%; left:22%; }
+      .sp-cloud-b::before { width:140%; height:160%; top:-80%; left:18%; }
+      .sp-cloud-b::after  { width:80%;  height:95%;  top:-40%; left:70%; }
+
+      .sp-cloud-c { width:8%; height:0; padding-bottom:3.8%; top:8%; left:52%; }
+      .sp-cloud-c::before { width:130%; height:150%; top:-72%; left:16%; }
+      .sp-cloud-c::after  { width:70%;  height:90%;  top:-28%; left:66%; }
+
+      .sp-cloud-d { width:6%; height:0; padding-bottom:2.8%; top:6%; left:76%; }
+      .sp-cloud-d::before { width:140%; height:150%; top:-68%; left:12%; }
+      .sp-cloud-d::after  { width:80%;  height:90%;  top:-24%; left:64%; }
+
+      .sp-cloud-e { width:4.5%; height:0; padding-bottom:2%; top:14%; left:90%; }
+      .sp-cloud-e::before { width:130%; height:140%; top:-60%; left:14%; }
+      .sp-cloud-e::after  { width:70%;  height:85%;  top:-18%; left:62%; }
+
+      /* ── Title area ──────────────────────────────────────────────── */
+      .sp-title-area {
+        position: absolute;
+        top: 5%;
+        left: 0; right: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        z-index: 3;
+        pointer-events: none;
+      }
+
+      .sp-title {
+        font-family: 'Darumadrop One', cursive;
+        font-size: clamp(40px, 9.5vw, 82px);
+        color: #ff2828;
+        line-height: 1.0;
+        letter-spacing: 0.02em;
+        /* Thick black outline in 8 directions */
+        text-shadow:
+          -4px -4px 0 #0a0000,  0 -4px 0 #0a0000,  4px -4px 0 #0a0000,
+          -4px  0   0 #0a0000,                       4px  0   0 #0a0000,
+          -4px  4px 0 #0a0000,  0  4px 0 #0a0000,   4px  4px 0 #0a0000,
+          /* fatter corners */
+          -5px -5px 0 #0a0000,  5px -5px 0 #0a0000,
+          -5px  5px 0 #0a0000,  5px  5px 0 #0a0000,
+          /* 3-D depth in dark red */
+          6px  8px 0 #8a0000,
+          7px  9px 0 #620000,
+          8px 10px 0 #460000;
+        filter: drop-shadow(0 14px 18px rgba(0,0,0,0.35));
+        user-select: none;
+        animation: sp-titleIn 0.6s cubic-bezier(0.34,1.56,0.64,1) both;
+      }
+      @keyframes sp-titleIn {
+        from { opacity:0; transform:translateY(-20px) scale(0.9); }
+        to   { opacity:1; transform:translateY(0)     scale(1);   }
+      }
+
+      .sp-subtitle {
+        font-family: 'Press Start 2P', monospace;
+        font-size: clamp(7px, 1.5vw, 12px);
+        color: #fff8d0;
+        margin-top: 4px;
+        letter-spacing: 0.18em;
+        text-shadow:
+          -2px -2px 0 #5a3000,  0 -2px 0 #5a3000,  2px -2px 0 #5a3000,
+          -2px  0   0 #5a3000,                       2px  0   0 #5a3000,
+          -2px  2px 0 #5a3000,  0  2px 0 #5a3000,   2px  2px 0 #5a3000;
+        user-select: none;
+        animation: sp-fadeIn 0.5s 0.3s ease both;
+      }
+      @keyframes sp-fadeIn {
+        from { opacity:0; transform:translateY(8px); }
+        to   { opacity:1; transform:translateY(0);   }
+      }
+
+      /* ── Rolling hills mid-ground ────────────────────────────────── */
+      .sp-hills {
+        position: absolute;
+        bottom: 38%;
+        left: 0; right: 0;
+        height: 26%;
+        pointer-events: none;
+        z-index: 1;
+      }
+      .sp-hill { position: absolute; bottom: 0; border-radius: 50% 50% 0 0; }
+      .sp-hill-a {
+        width: 75%; height: 80%;
+        background: linear-gradient(180deg, #60b050 0%, #4a9038 100%);
+        left: -8%;
+        opacity: 0.72;
+        border-radius: 70% 90% 0 0;
+      }
+      .sp-hill-b {
+        width: 60%; height: 90%;
+        background: linear-gradient(180deg, #50a040 0%, #3a8028 100%);
+        right: -4%;
+        opacity: 0.80;
+        border-radius: 85% 55% 0 0;
+      }
+      .sp-hill-c {
+        width: 50%; height: 65%;
+        background: linear-gradient(180deg, #48983a 0%, #347020 100%);
+        left: 22%;
+        border-radius: 100% 80% 0 0;
+      }
+
+      /* ── Dark foreground ground ──────────────────────────────────── */
+      .sp-ground {
+        position: absolute;
+        bottom: 0; left: 0; right: 0;
+        height: 40%;
+        background: linear-gradient(180deg, #286018 0%, #1c4412 45%, #162e0e 100%);
+        z-index: 2;
+      }
+      /* Pixel grass fringe along the top edge */
+      .sp-ground::before {
+        content: '';
+        position: absolute;
+        top: -5px; left: 0; right: 0; height: 8px;
+        background-image: repeating-linear-gradient(90deg,
+          #3a8828 0px, #3a8828 5px,
+          #286018 5px, #286018 9px,
+          #48a830 9px, #48a830 13px,
+          #286018 13px, #286018 17px,
+          #3a7820 17px, #3a7820 21px,
+          #1e5010 21px, #1e5010 25px
+        );
+      }
+
+      /* ── Ground bushes ───────────────────────────────────────────── */
+      .sp-bush {
+        position: absolute;
+        background: #1a4812;
+        border-radius: 50%;
+        z-index: 3;
+      }
+      .sp-bush-1 { width:4.5%;  height:0; padding-bottom:3.5%; bottom:38%; left:1%;
+                   box-shadow: 2.5% 0.5% 0 #22561a, -1% 0.2% 0 #163810; }
+      .sp-bush-2 { width:2.5%;  height:0; padding-bottom:2%;   bottom:39%; left:6%; }
+      .sp-bush-3 { width:6.5%;  height:0; padding-bottom:4.8%; bottom:37%; left:10%;
+                   box-shadow: 3% 0.8% 0 #1e5014; }
+      .sp-bush-4 { width:3%;    height:0; padding-bottom:2.4%; bottom:38%; left:18%; }
+      .sp-bush-5 { width:3.5%;  height:0; padding-bottom:2.8%; bottom:38%; right:18%;
+                   box-shadow: 2% 0.4% 0 #1a4412; }
+      .sp-bush-6 { width:5.5%;  height:0; padding-bottom:4%;   bottom:37%; right:8%;
+                   box-shadow: 2.5% 0.8% 0 #22561a; }
+      .sp-bush-7 { width:2%;    height:0; padding-bottom:1.8%; bottom:39%; right:3%; }
+
+      /* ── Running pixel character (right side) ───────────────────── */
+      .sp-character {
+        position: absolute;
+        bottom: 39%;
+        right: 7%;
+        z-index: 4;
+        /* 4px-grid pixel person via box-shadow */
+        width:  4px;
+        height: 4px;
+        image-rendering: pixelated;
+        background: #c88060;  /* head */
+        box-shadow:
+          /* hair */
+          0px  -4px 0 #2a1206,  4px -4px 0 #2a1206,  8px -4px 0 #2a1206, 12px -4px 0 #2a1206,
+          0px  -8px 0 #2a1206,  4px -8px 0 #2a1206,  8px -8px 0 #2a1206,
+          /* head row */
+                               4px   0  0 #c88060,    8px   0  0 #c88060,
+          /* eyes */
+          0px   4px 0 #101010,  8px  4px 0 #101010,
+          /* body */
+          0px   8px 0 #d82020,  4px  8px 0 #d82020,   8px  8px 0 #d82020,
+          0px  12px 0 #d82020,  4px 12px 0 #d82020,   8px 12px 0 #d82020,
+          /* shorts */
+          0px  16px 0 #b81010,  4px 16px 0 #b81010,   8px 16px 0 #b81010,
+          /* legs */
+          0px  20px 0 #c88060,  8px 20px 0 #c88060,
+          /* shoes */
+          0px  24px 0 #101010,  4px 24px 0 #c88060,   8px 24px 0 #101010;
+        animation: sp-run 0.4s steps(1) infinite;
+      }
+      @keyframes sp-run {
+        0%  { transform: translateY(0);   }
+        50% { transform: translateY(-4px);}
+      }
+
+      /* ── Menu items ──────────────────────────────────────────────── */
+      .sp-menu {
+        position: absolute;
+        bottom: 14%;
+        left: 7%;
+        display: flex;
+        flex-direction: column;
+        gap: clamp(2px, 0.6vh, 8px);
+        z-index: 5;
+        animation: sp-fadeIn 0.5s 0.55s ease both;
+      }
+
+      .sp-menu-item {
+        font-family: 'VT323', monospace;
+        font-size: clamp(22px, 4.8vw, 40px);
+        color: #ffffff;
+        display: flex;
+        align-items: center;
+        gap: clamp(6px, 1.2vw, 12px);
+        user-select: none;
+        text-shadow:
+          -2px -2px 0 #000,  0 -2px 0 #000,  2px -2px 0 #000,
+          -2px  0   0 #000,                   2px  0   0 #000,
+          -2px  2px 0 #000,  0  2px 0 #000,   2px  2px 0 #000;
+        letter-spacing: 0.06em;
+        transition: transform 0.1s ease, color 0.1s ease;
+      }
+      .sp-menu-start { cursor: pointer; }
+      .sp-menu-start:hover {
+        color: #ffe840;
+        transform: translateX(5px) scale(1.04);
+      }
+      .sp-menu-options {
+        color: rgba(255,255,255,0.38);
+        font-size: clamp(17px, 3.7vw, 31px);
+        padding-left: clamp(28px, 5.5vw, 46px);
+        cursor: not-allowed;
+      }
+
+      /* Slime mascot */
+      .sp-slime {
+        display: inline-block;
+        flex-shrink: 0;
+        width:  clamp(18px, 3.8vw, 32px);
+        height: clamp(20px, 4.2vw, 35px);
+        background: radial-gradient(ellipse at 38% 28%, #80f060 0%, #30b820 60%, #1a8810 100%);
+        border-radius: 50% 50% 46% 46% / 58% 58% 42% 42%;
+        position: relative;
+        box-shadow: 0 3px 6px rgba(0,0,0,0.55), inset 0 -3px 5px rgba(0,60,0,0.3);
+      }
+      .sp-slime::before {
+        /* two eyes */
+        content: '';
+        position: absolute;
+        width:  22%; height: 25%;
+        background: #0a0a0a;
+        border-radius: 50%;
+        top: 40%; left: 18%;
+        box-shadow: calc(2.3 * 22%) 0 0 #0a0a0a;
+      }
+      .sp-slime::after {
+        /* gloss highlight */
+        content: '';
+        position: absolute;
+        width: 30%; height: 18%;
+        background: rgba(255,255,255,0.55);
+        border-radius: 50%;
+        top: 15%; left: 28%;
+        transform: rotate(-12deg);
+      }
+
+      /* ── Press any key pulse ─────────────────────────────────────── */
+      .sp-anykey {
+        position: absolute;
+        bottom: 6.5%;
+        left: 0; right: 0;
+        text-align: center;
+        font-family: 'Press Start 2P', monospace;
+        font-size: clamp(6px, 1.3vw, 10px);
+        color: rgba(255,255,255,0.65);
+        text-shadow: 0 1px 4px rgba(0,0,0,0.55);
+        letter-spacing: 0.12em;
+        animation: sp-blink 1.4s step-end infinite;
+        user-select: none;
+        z-index: 5;
+      }
+      @keyframes sp-blink { 0%,100%{opacity:1} 50%{opacity:0} }
+
+      /* ── Footer ──────────────────────────────────────────────────── */
+      .sp-footer {
+        position: absolute;
+        bottom: 1.8%;
+        left: 0; right: 0;
+        text-align: center;
+        font-family: 'VT323', monospace;
+        font-size: clamp(10px, 2.1vw, 16px);
+        color: rgba(255,255,255,0.28);
+        letter-spacing: 0.08em;
+        user-select: none;
+        z-index: 5;
+      }
+
+      /* ── Fade-out transition ─────────────────────────────────────── */
+      #splash-menu.sp-hiding {
+        opacity: 0;
+        pointer-events: none;
+      }
     </style>
   </head>
   <body>
@@ -415,6 +747,62 @@
           <div class="gw-bezel">
             <!-- CRT glass screen -->
             <div class="gw-screen">
+
+              <!-- ═══ SPLASH MENU ═══════════════════════════════════ -->
+              <div id="splash-menu">
+
+                <!-- Clouds -->
+                <div class="sp-cloud sp-cloud-a"></div>
+                <div class="sp-cloud sp-cloud-b"></div>
+                <div class="sp-cloud sp-cloud-c"></div>
+                <div class="sp-cloud sp-cloud-d"></div>
+                <div class="sp-cloud sp-cloud-e"></div>
+
+                <!-- Title -->
+                <div class="sp-title-area">
+                  <div class="sp-title">LangBuddy</div>
+                  <div class="sp-subtitle">学中文 &nbsp;·&nbsp; LEARN CHINESE RPG</div>
+                </div>
+
+                <!-- Rolling hills -->
+                <div class="sp-hills">
+                  <div class="sp-hill sp-hill-a"></div>
+                  <div class="sp-hill sp-hill-b"></div>
+                  <div class="sp-hill sp-hill-c"></div>
+                </div>
+
+                <!-- Ground -->
+                <div class="sp-ground"></div>
+
+                <!-- Foreground bushes -->
+                <div class="sp-bush sp-bush-1"></div>
+                <div class="sp-bush sp-bush-2"></div>
+                <div class="sp-bush sp-bush-3"></div>
+                <div class="sp-bush sp-bush-4"></div>
+                <div class="sp-bush sp-bush-5"></div>
+                <div class="sp-bush sp-bush-6"></div>
+                <div class="sp-bush sp-bush-7"></div>
+
+                <!-- Running pixel character -->
+                <div class="sp-character"></div>
+
+                <!-- Menu items -->
+                <div class="sp-menu">
+                  <div class="sp-menu-item sp-menu-start" id="btn-start">
+                    <span class="sp-slime"></span>Start Game
+                  </div>
+                  <div class="sp-menu-item sp-menu-options">Options</div>
+                </div>
+
+                <!-- Press any key -->
+                <div class="sp-anykey">PRESS ENTER OR SPACE</div>
+
+                <!-- Footer -->
+                <div class="sp-footer">© 2026 LangBuddy · POC v0.1 · Learn Chinese the fun way</div>
+
+              </div>
+              <!-- ═══ END SPLASH MENU ════════════════════════════════ -->
+
               <div id="game-container"></div>
               <div class="crt-glow"></div>
             </div>
@@ -458,6 +846,39 @@
       </div>
     </div>
 
+    <script>
+      (function () {
+        function startGame() {
+          var menu = document.getElementById('splash-menu');
+          if (!menu || menu.dataset.starting) return;
+          menu.dataset.starting = '1';
+          menu.classList.add('sp-hiding');
+          setTimeout(function () {
+            menu.style.display = 'none';
+            var game = window.__phaserGame;
+            if (game) {
+              var ms = game.scene.getScene('MainMenuScene');
+              if (ms && game.scene.isActive('MainMenuScene')) {
+                game.scene.stop('MainMenuScene');
+              }
+              game.scene.start('WorldScene');
+            }
+          }, 520);
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+          var btn = document.getElementById('btn-start');
+          if (btn) btn.addEventListener('click', startGame);
+
+          document.addEventListener('keydown', function handler(e) {
+            if (e.code === 'Space' || e.code === 'Enter') {
+              document.removeEventListener('keydown', handler);
+              startGame();
+            }
+          });
+        });
+      })();
+    </script>
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>
