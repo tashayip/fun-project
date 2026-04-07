@@ -10,8 +10,9 @@ const config: Phaser.Types.Core.GameConfig = {
   width: 960,
   height: 640,
   pixelArt: true,
-  backgroundColor: '#2d5a1b',
+  backgroundColor: '#120c06',
   antialias: false,
+  roundPixels: true,
   physics: {
     default: 'arcade',
     arcade: {
@@ -20,8 +21,7 @@ const config: Phaser.Types.Core.GameConfig = {
     }
   },
   scale: {
-    mode: Phaser.Scale.FIT,
-    autoCenter: Phaser.Scale.CENTER_BOTH,
+    mode: Phaser.Scale.NONE,
     width: 960,
     height: 640
   },

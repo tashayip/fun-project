@@ -100,6 +100,7 @@ export class WorldScene extends Phaser.Scene {
     this.cameras.main.fadeIn(600, 0, 0, 0)
     this.cameras.main.setZoom(this.ZOOM)
     this.cameras.main.setBounds(0, 0, this.MAP_W, this.MAP_H)
+    this.cameras.main.roundPixels = true
 
     this.buildMap()
     this.createAnimations()
@@ -122,9 +123,11 @@ export class WorldScene extends Phaser.Scene {
   // ─── Map ──────────────────────────────────────────────────────────────────
   private buildMap() {
     const W = this.MAP_W, H = this.MAP_H
-    this.add.tileSprite(W / 2, H / 2, W, H, 'grass').setDepth(0)
-    this.add.tileSprite(W / 2, 340, W, 60, 'path').setDepth(1)
-    this.add.tileSprite(W / 2, H / 2, 80, H, 'path').setDepth(1)
+    // Warm concrete floor — tinted grass as base tile
+    this.add.tileSprite(W / 2, H / 2, W, H, 'grass').setDepth(0).setTint(0xb09878)
+    // Main pedestrian aisles — slightly darker warm stone
+    this.add.tileSprite(W / 2, 340, W, 60, 'path').setDepth(1).setTint(0x8a7860)
+    this.add.tileSprite(W / 2, H / 2, 80, H, 'path').setDepth(1).setTint(0x8a7860)
     if (this.textures.exists('water')) {
       this.add.tileSprite(900, 600, 80, 60, 'water').setDepth(1).setAlpha(0.85)
     }
@@ -145,37 +148,63 @@ export class WorldScene extends Phaser.Scene {
 
   private buildStall(x: number, y: number, label: string, index: number) {
     const W = 160, H = 100
+
+    // Back wall — warm dark wood planks
     const bg = this.add.graphics()
-    bg.fillStyle(0x8B5E3C, 1).fillRect(x, y, W, H)
-    bg.lineStyle(2, 0x5C3A1E, 1).strokeRect(x, y, W, H)
+    bg.fillStyle(0x5c3218, 1).fillRect(x, y, W, H)
+    for (let p = 0; p < 5; p++) {
+      bg.fillStyle(0x3a1e0c, 0.5).fillRect(x, y + p * 20, W, 1)
+      bg.fillStyle(0xffffff, 0.04).fillRect(x, y + p * 20 + 2, W, 1)
+    }
+    bg.lineStyle(2, 0x2a0e04, 1).strokeRect(x, y, W, H)
     bg.setDepth(2)
 
-    const roofColors = [0xc0392b, 0xe67e22, 0x2980b9, 0x8e44ad, 0x27ae60, 0xd35400]
+    // Coloured awning — festive hawker stall colours
+    const roofColors = [0xc83020, 0xd87028, 0x1a6878, 0x6030a0, 0x205838, 0xc85020]
+    const rColor = roofColors[index % roofColors.length]
     const roof = this.add.graphics()
-    roof.fillStyle(roofColors[index % roofColors.length], 1).fillRect(x-8, y-16, W+16, 22)
-    roof.lineStyle(2, 0x2c3e50, 1).strokeRect(x-8, y-16, W+16, 22)
+    roof.fillStyle(rColor, 1).fillRect(x - 10, y - 22, W + 20, 28)
+    roof.fillStyle(0xffffff, 0.12).fillRect(x - 10, y - 22, W + 20, 8)
+    roof.fillStyle(0x000000, 0.2).fillRect(x - 10, y + 4, W + 20, 2)
+    roof.lineStyle(2, 0x180804, 1).strokeRect(x - 10, y - 22, W + 20, 28)
     roof.setDepth(3)
-    for (let i = 0; i < 10; i++) {
-      const s = this.add.graphics()
-      s.fillStyle(0xffffff, 0.25).fillRect(x-8+i*18, y-16, 9, 22).setDepth(4)
+
+    // Awning fringe — alternating colour/white triangles
+    const fw = (W + 20) / 8
+    for (let f = 0; f < 8; f++) {
+      const fr = this.add.graphics()
+      if (f % 2 === 0) {
+        fr.fillStyle(0xffffff, 0.22)
+      } else {
+        fr.fillStyle(rColor, 0.7)
+      }
+      fr.fillTriangle(
+        x - 10 + f * fw, y + 6,
+        x - 10 + (f + 0.5) * fw, y + 16,
+        x - 10 + (f + 1) * fw, y + 6
+      ).setDepth(4)
     }
 
+    // Counter / serving surface
     const counter = this.add.graphics()
-    counter.fillStyle(0xd4a96a, 1).fillRect(x+8, y+50, W-16, 24)
-    counter.lineStyle(2, 0x8B5E3C, 1).strokeRect(x+8, y+50, W-16, 24)
+    counter.fillStyle(0xc89060, 1).fillRect(x + 6, y + 52, W - 12, 26)
+    counter.fillStyle(0xe8b080, 1).fillRect(x + 6, y + 52, W - 12, 4)
+    counter.fillStyle(0x7a4820, 1).fillRect(x + 6, y + 74, W - 12, 4)
+    counter.lineStyle(1.5, 0x6a3818, 1).strokeRect(x + 6, y + 52, W - 12, 26)
     counter.setDepth(3)
 
-    this.add.text(x+W/2, y+20, label, {
-      fontFamily: 'Press Start 2P', fontSize: '10px', color: '#ffffff', stroke: '#000000', strokeThickness: 3
-    }).setOrigin(0.5).setDepth(5)
+    // Sign board — yellow with Chinese label
+    const sign = this.add.graphics()
+    sign.fillStyle(0xf8e840, 1).fillRoundedRect(x + W / 2 - 38, y + 10, 76, 22, 3)
+    sign.lineStyle(1.5, 0xb88820, 1).strokeRoundedRect(x + W / 2 - 38, y + 10, 76, 22, 3)
+    sign.setDepth(5)
 
-    if (this.textures.exists('spring-crops')) {
-      const f1 = this.add.image(x+W/2-30, y+30, 'spring-crops').setScale(0.5).setDepth(4)
-      const f2 = this.add.image(x+W/2+10, y+32, 'spring-crops').setScale(0.5).setDepth(4)
-      f1.setCrop(0,0,32,16); f2.setCrop(32,0,32,16)
-    }
+    this.add.text(x + W / 2, y + 21, label, {
+      fontFamily: 'Press Start 2P', fontSize: '9px', color: '#3a1800', stroke: '#f8e840', strokeThickness: 1
+    }).setOrigin(0.5).setDepth(6)
 
-    const wall = this.add.rectangle(x+W/2, y+H/2, W, H, 0, 0)
+    // Collision body
+    const wall = this.add.rectangle(x + W / 2, y + H / 2, W, H, 0, 0)
     this.physics.add.existing(wall, true)
     this.walls.add(wall)
   }
@@ -209,14 +238,16 @@ export class WorldScene extends Phaser.Scene {
     ]
     tables.forEach(({x,y}) => {
       const g = this.add.graphics()
-      g.fillStyle(0xc19a6b,1).fillRect(x-16,y-10,32,22)
-      g.lineStyle(2,0x8B5E3C,1).strokeRect(x-16,y-10,32,22)
-      g.fillStyle(0x8B5E3C,1).fillRect(x-14,y+12,4,6).fillRect(x+10,y+12,4,6)
+      g.fillStyle(0xa87848, 1).fillRect(x - 16, y - 10, 32, 22)
+      g.fillStyle(0xffffff, 0.08).fillRect(x - 16, y - 10, 32, 4)
+      g.lineStyle(1.5, 0x6a3a18, 1).strokeRect(x - 16, y - 10, 32, 22)
+      g.fillStyle(0x6a3a18, 1).fillRect(x - 14, y + 12, 4, 6).fillRect(x + 10, y + 12, 4, 6)
       g.setDepth(5)
       ;[{dx:-24,dy:0},{dx:24,dy:0},{dx:0,dy:-20},{dx:0,dy:20}].forEach(({dx,dy}) => {
         const c = this.add.graphics()
-        c.fillStyle(0x7a5230,1).fillRect(x+dx-7,y+dy-7,14,14)
-        c.lineStyle(1,0x4a3010,1).strokeRect(x+dx-7,y+dy-7,14,14).setDepth(4)
+        c.fillStyle(0x905838, 1).fillRect(x + dx - 7, y + dy - 7, 14, 14)
+        c.fillStyle(0xffffff, 0.07).fillRect(x + dx - 7, y + dy - 7, 14, 3)
+        c.lineStyle(1, 0x5a2e10, 1).strokeRect(x + dx - 7, y + dy - 7, 14, 14).setDepth(4)
       })
     })
     const decor = [{x:120,y:620},{x:240,y:635},{x:580,y:625},{x:730,y:618}]
@@ -280,15 +311,19 @@ export class WorldScene extends Phaser.Scene {
       const shadow = this.add.ellipse(cfg.x,cfg.y+12,18,8,0x000000,0.2).setDepth(19)
       this.events.on('update',()=>shadow.setPosition(npc.x,npc.y+12))
 
+      // Name plate — warm dark with gold border
       const labelBg = this.add.graphics()
-      labelBg.fillStyle(0x000000,0.7).fillRoundedRect(-52,-30,104,20,3)
-      const labelText = this.add.text(0,-21,`${cfg.nameZh} · ${cfg.name}`,{fontFamily:'VT323',fontSize:'12px',color:'#ffff88',align:'center'}).setOrigin(0.5)
-      const hint = this.add.text(0,-8,'[ E / Space ]',{fontFamily:'VT323',fontSize:'10px',color:'#aaffaa',align:'center'}).setOrigin(0.5).setAlpha(0)
+      labelBg.fillStyle(0x0e0906, 0.92).fillRoundedRect(-50, -28, 100, 18, 3)
+      labelBg.lineStyle(1, 0xd4961e, 0.85).strokeRoundedRect(-50, -28, 100, 18, 3)
+      const labelText = this.add.text(0, -19, `${cfg.nameZh}  ${cfg.name}`, { fontFamily: 'VT323', fontSize: '11px', color: '#fff0d0', align: 'center' }).setOrigin(0.5)
+      // Interact hint — warm gold, compact
+      const hint = this.add.text(0, -6, '[ E ]', { fontFamily: 'VT323', fontSize: '9px', color: '#f0c840', align: 'center' }).setOrigin(0.5).setAlpha(0)
+      // Role badge — per-NPC portrait colour
       const roleBg = this.add.graphics()
-      roleBg.fillStyle(cfg.portraitColor,0.85).fillRoundedRect(-28,-46,56,14,2)
-      const roleText = this.add.text(0,-39,cfg.role,{fontFamily:'VT323',fontSize:'10px',color:'#ffffff',align:'center'}).setOrigin(0.5)
+      roleBg.fillStyle(cfg.portraitColor, 0.92).fillRoundedRect(-30, -44, 60, 13, 2)
+      const roleText = this.add.text(0, -38, cfg.role, { fontFamily: 'VT323', fontSize: '9px', color: '#ffffff', align: 'center' }).setOrigin(0.5)
 
-      const container = this.add.container(cfg.x,cfg.y-20,[roleBg,roleText,labelBg,labelText,hint])
+      const container = this.add.container(cfg.x, cfg.y - 20, [roleBg, roleText, labelBg, labelText, hint])
       container.setDepth(30).setData('interactHint',hint)
       this.npcLabels.push(container)
       this.scheduleNpcWander(npc,i)
@@ -355,83 +390,90 @@ export class WorldScene extends Phaser.Scene {
   }
 
   // ─── Dialogue Box ─────────────────────────────────────────────────────────
-  // Box: 420w × 86h world → 840×172 canvas px, portrait 54w
+  // Box: 360w × 90h world → 720×180 canvas px, portrait 52w
+  // Centered: world x=60 → canvas x=120..840 (120px margins both sides)
   private createDialogueBox() {
-    // Canvas target: x=40→920 (880px wide), y=362→538 (176px tall)
-    // World: x=20, y=181, w=440, h=88
-    // Hotbar barBg top is canvas 566 — gap = 566-538 = 28px. Clear.
-    const boxW = 440, boxH = 88, portW = 50
+    const boxW = 360, boxH = 90, portW = 52
 
+    // Main panel — warm dark with gold border
     const bg = this.add.graphics()
-    bg.fillStyle(0x050f0a,0.96).fillRoundedRect(0,0,boxW,boxH,5)
-    bg.lineStyle(2,0x44dd44,1).strokeRoundedRect(0,0,boxW,boxH,5)
-    bg.lineStyle(1,0x4aff4a,0.25).strokeRoundedRect(2,2,boxW-4,boxH-4,4)
+    bg.fillStyle(0x0c0806, 0.97).fillRoundedRect(0, 0, boxW, boxH, 5)
+    bg.lineStyle(2, 0xd4961e, 1).strokeRoundedRect(0, 0, boxW, boxH, 5)
+    bg.lineStyle(1, 0xd4961e, 0.22).strokeRoundedRect(2, 2, boxW - 4, boxH - 4, 4)
 
     this.dialoguePortraitBg = this.add.graphics()
 
-    this.dialoguePortraitChar = this.add.text(portW/2,boxH/2,'',{
-      fontFamily:'VT323',fontSize:'18px',color:'#ffffff',stroke:'#000000',strokeThickness:2
+    this.dialoguePortraitChar = this.add.text(portW / 2, boxH / 2, '', {
+      fontFamily: 'VT323', fontSize: '20px', color: '#ffffff', stroke: '#000000', strokeThickness: 2
     }).setOrigin(0.5)
 
     const sep = this.add.graphics()
-    sep.lineStyle(1,0x1a4a1a,1)
-    sep.beginPath().moveTo(portW+4,5).lineTo(portW+4,boxH-5).strokePath()
+    sep.lineStyle(1, 0x3a2010, 1)
+    sep.beginPath().moveTo(portW + 4, 5).lineTo(portW + 4, boxH - 5).strokePath()
 
-    // Name tab above box
+    // Name tab above box — warm gold border
     const nameBg = this.add.graphics()
-    nameBg.fillStyle(0x0a2a0a,1).fillRoundedRect(portW+6,-14,170,18,3)
-    nameBg.lineStyle(1.5,0x44dd44,1).strokeRoundedRect(portW+6,-14,170,18,3)
+    nameBg.fillStyle(0x180e06, 1).fillRoundedRect(portW + 6, -17, 190, 20, 3)
+    nameBg.lineStyle(1.5, 0xd4961e, 1).strokeRoundedRect(portW + 6, -17, 190, 20, 3)
 
-    const nameText = this.add.text(portW+10,-11,'',{fontFamily:'VT323',fontSize:'14px',color:'#88ff88'})
-    const roleText = this.add.text(portW+180,-11,'',{fontFamily:'VT323',fontSize:'11px',color:'#888888'})
+    const nameText = this.add.text(portW + 12, -13, '', { fontFamily: 'VT323', fontSize: '14px', color: '#fff0d0' })
+    const roleText = this.add.text(portW + 200, -13, '', { fontFamily: 'VT323', fontSize: '11px', color: '#907868' })
 
-    const bodyText = this.add.text(portW+8,7,'',{
-      fontFamily:'VT323, serif',fontSize:'15px',color:'#e8f8e8',
-      wordWrap:{width:boxW-portW-16},lineSpacing:3
+    // Body text — larger for Chinese readability
+    const bodyText = this.add.text(portW + 8, 8, '', {
+      fontFamily: 'VT323, serif', fontSize: '16px', color: '#ffe8d0',
+      wordWrap: { width: boxW - portW - 16 }, lineSpacing: 4
     })
 
-    const hint = this.add.text(boxW-6,boxH-5,'Space / E',{fontFamily:'VT323',fontSize:'9px',color:'#336633'}).setOrigin(1,1)
-    const cursor = this.add.text(boxW-6,boxH-16,'▼',{fontFamily:'VT323',fontSize:'11px',color:'#4aff4a'}).setOrigin(1,1)
-    this.tweens.add({targets:cursor,alpha:0,duration:400,yoyo:true,repeat:-1})
+    const hint = this.add.text(boxW - 6, boxH - 5, 'Space / E', { fontFamily: 'VT323', fontSize: '9px', color: '#4a3018' }).setOrigin(1, 1)
+    const cursor = this.add.text(boxW - 6, boxH - 16, '▼', { fontFamily: 'VT323', fontSize: '11px', color: '#d4961e' }).setOrigin(1, 1)
+    this.tweens.add({ targets: cursor, alpha: 0, duration: 400, yoyo: true, repeat: -1 })
 
-    this.dialogueBox = this.add.container(0,0,[bg,this.dialoguePortraitBg,this.dialoguePortraitChar,sep,nameBg,nameText,roleText,bodyText,hint,cursor])
+    this.dialogueBox = this.add.container(0, 0, [bg, this.dialoguePortraitBg, this.dialoguePortraitChar, sep, nameBg, nameText, roleText, bodyText, hint, cursor])
     this.dialogueBox.setDepth(100).setScrollFactor(0).setVisible(false)
-    this.dialogueBox.setData('nameText',nameText).setData('roleText',roleText).setData('bodyText',bodyText)
+    this.dialogueBox.setData('nameText', nameText).setData('roleText', roleText).setData('bodyText', bodyText)
   }
 
   // ─── Status Panel ─────────────────────────────────────────────────────────
-  // Container at world (6,6) → canvas (12,12). Size: 130w×50h → 260×100 canvas px
+  // Container at world (30,10) → canvas (60,20). Size: 138w×52h → 276×104 canvas px
   private createStatusPanel() {
-    const W=130, H=50
+    const W = 138, H = 52
 
     const panelBg = this.add.graphics()
-    panelBg.fillStyle(0x0d1a0d,0.93).fillRoundedRect(0,0,W,H,4)
-    panelBg.lineStyle(2,0xf5c842,1).strokeRoundedRect(0,0,W,H,4)
+    panelBg.fillStyle(0x0e0a06, 0.95).fillRoundedRect(0, 0, W, H, 4)
+    panelBg.lineStyle(2, 0xd4961e, 1).strokeRoundedRect(0, 0, W, H, 4)
+    panelBg.lineStyle(1, 0xd4961e, 0.22).strokeRoundedRect(2, 2, W - 4, H - 4, 3)
 
-    // Level badge circle
+    // Level badge — warm gold circle
     const lvlBg = this.add.graphics()
-    lvlBg.fillStyle(0xf5c842,1).fillCircle(17,25,13)
-    const lvlCaption = this.add.text(17,13,'LV',{fontFamily:'VT323',fontSize:'8px',color:'#5a2a00'}).setOrigin(0.5,0)
-    this.levelBadgeText = this.add.text(17,26,'1',{fontFamily:'VT323',fontSize:'16px',color:'#1a0600'}).setOrigin(0.5,0.5)
+    lvlBg.fillStyle(0xd4961e, 1).fillCircle(17, 26, 13)
+    lvlBg.fillStyle(0xffd060, 1).fillCircle(17, 25, 11)
+    const lvlCaption = this.add.text(17, 15, 'LV', { fontFamily: 'VT323', fontSize: '8px', color: '#4a2200' }).setOrigin(0.5, 0)
+    this.levelBadgeText = this.add.text(17, 27, '1', { fontFamily: 'VT323', fontSize: '16px', color: '#1e0800' }).setOrigin(0.5, 0.5)
 
-    // HP row — bar sits at local (50,8) size (74,11) → canvas 148×22
-    const hpLabel = this.add.text(35,7,'HP',{fontFamily:'VT323',fontSize:'13px',color:'#ff8888'})
+    // HP row
+    const hpLabel = this.add.text(36, 8, 'HP', { fontFamily: 'VT323', fontSize: '13px', color: '#ff9888' })
     const hpBg = this.add.graphics()
-    hpBg.fillStyle(0x3a0f0f,1).fillRoundedRect(50,8,74,11,2)
+    hpBg.fillStyle(0x2a0808, 1).fillRoundedRect(52, 9, 74, 10, 2)
     this.hpBarFill = this.add.graphics()
-    this.hpValueText = this.add.text(126,8,'',{fontFamily:'VT323',fontSize:'11px',color:'#ffcccc'}).setOrigin(1,0)
+    this.hpValueText = this.add.text(128, 9, '', { fontFamily: 'VT323', fontSize: '10px', color: '#ffb8a8' }).setOrigin(1, 0)
 
     // XP row
-    const xpLabel = this.add.text(35,22,'XP',{fontFamily:'VT323',fontSize:'13px',color:'#f5c842'})
+    const xpLabel = this.add.text(36, 23, 'XP', { fontFamily: 'VT323', fontSize: '13px', color: '#f0c040' })
     const xpBg = this.add.graphics()
-    xpBg.fillStyle(0x2a2000,1).fillRoundedRect(50,23,74,11,2)
+    xpBg.fillStyle(0x201400, 1).fillRoundedRect(52, 24, 74, 10, 2)
     this.xpBarFill = this.add.graphics()
-    this.xpValueText = this.add.text(126,23,'',{fontFamily:'VT323',fontSize:'11px',color:'#ffe088'}).setOrigin(1,0)
+    this.xpValueText = this.add.text(128, 24, '', { fontFamily: 'VT323', fontSize: '10px', color: '#ffd870' }).setOrigin(1, 0)
 
-    // Gold
-    this.goldText = this.add.text(35,37,'',{fontFamily:'VT323',fontSize:'13px',color:'#f5c842'})
+    // Gold counter
+    this.goldText = this.add.text(36, 38, '', { fontFamily: 'VT323', fontSize: '13px', color: '#f0c840' })
 
-    const panel = this.add.container(6,6,[panelBg,lvlBg,lvlCaption,this.levelBadgeText,hpLabel,hpBg,this.hpBarFill,this.hpValueText,xpLabel,xpBg,this.xpBarFill,this.xpValueText,this.goldText])
+    const panel = this.add.container(30 * this.ZOOM, 10 * this.ZOOM, [
+      panelBg, lvlBg, lvlCaption, this.levelBadgeText,
+      hpLabel, hpBg, this.hpBarFill, this.hpValueText,
+      xpLabel, xpBg, this.xpBarFill, this.xpValueText,
+      this.goldText
+    ])
     panel.setScrollFactor(0).setDepth(100)
     this.redrawStatusBars()
   }
@@ -441,7 +483,7 @@ export class WorldScene extends Phaser.Scene {
     this.hpBarFill.clear()
     const hp = gs.hp/gs.maxHp
     if (hp>0){
-      const col = hp>0.5?0x44cc44:hp>0.25?0xf5c842:0xff4444
+      const col = hp>0.5?0x50c850:hp>0.25?0xf0c040:0xe03030
       this.hpBarFill.fillStyle(col,1).fillRoundedRect(50,8,74*hp,11,2)
     }
     this.hpValueText.setText(`${gs.hp}/${gs.maxHp}`)
@@ -457,86 +499,113 @@ export class WorldScene extends Phaser.Scene {
   }
 
   // ─── Quest Tracker ────────────────────────────────────────────────────────
-  // Container at world (360,6) → canvas (720,12). Panel 114w×72h → 228×144 canvas px
+  // Container at world (335,10) → canvas (670,20). Panel 118w×76h → 236×152 canvas px
   private createQuestTracker() {
-    const PW=114, PH=72
+    const PW = 118, PH = 76
 
     const bg = this.add.graphics()
-    bg.fillStyle(0x0d1a0d,0.93).fillRoundedRect(0,0,PW,PH,4)
-    bg.lineStyle(2,0x44dd44,1).strokeRoundedRect(0,0,PW,PH,4)
+    bg.fillStyle(0x0e0a06, 0.95).fillRoundedRect(0, 0, PW, PH, 4)
+    bg.lineStyle(2, 0xd4961e, 1).strokeRoundedRect(0, 0, PW, PH, 4)
+    bg.lineStyle(1, 0xd4961e, 0.22).strokeRoundedRect(2, 2, PW - 4, PH - 4, 3)
 
-    const header = this.add.text(PW/2,5,'QUEST',{fontFamily:'VT323',fontSize:'13px',color:'#44ff44',align:'center'}).setOrigin(0.5,0)
-    this.questTitleEn = this.add.text(PW/2,18,'',{fontFamily:'VT323',fontSize:'14px',color:'#ffffff',align:'center',wordWrap:{width:PW-8}}).setOrigin(0.5,0)
-    this.questTitleZh = this.add.text(PW/2,30,'',{fontFamily:'VT323',fontSize:'13px',color:'#f5c842',align:'center'}).setOrigin(0.5,0)
+    const header = this.add.text(PW / 2, 6, '任务 QUEST', {
+      fontFamily: 'VT323', fontSize: '11px', color: '#f0c840', align: 'center'
+    }).setOrigin(0.5, 0)
+    const hdrLine = this.add.graphics()
+    hdrLine.lineStyle(1, 0x5a3810, 1).beginPath().moveTo(4, 18).lineTo(PW - 4, 18).strokePath()
+
+    this.questTitleEn = this.add.text(PW / 2, 22, '', {
+      fontFamily: 'VT323', fontSize: '13px', color: '#fff0d0', align: 'center', wordWrap: { width: PW - 8 }
+    }).setOrigin(0.5, 0)
+    this.questTitleZh = this.add.text(PW / 2, 34, '', {
+      fontFamily: 'VT323', fontSize: '12px', color: '#f0c840', align: 'center'
+    }).setOrigin(0.5, 0)
 
     const divider = this.add.graphics()
-    divider.lineStyle(1,0x224422,1).beginPath().moveTo(6,43).lineTo(PW-6,43).strokePath()
+    divider.lineStyle(1, 0x3a2408, 1).beginPath().moveTo(4, 46).lineTo(PW - 4, 46).strokePath()
 
     this.questObjTexts = []
-    for (let i=0;i<4;i++){
-      const t = this.add.text(6,47+i*6,'',{fontFamily:'VT323',fontSize:'10px',color:'#cccccc',wordWrap:{width:PW-12}})
+    for (let i = 0; i < 4; i++) {
+      const t = this.add.text(6, 50 + i * 7, '', {
+        fontFamily: 'VT323', fontSize: '10px', color: '#a08870', wordWrap: { width: PW - 12 }
+      })
       this.questObjTexts.push(t)
     }
 
-    this.questContainer = this.add.container(360,6,[bg,header,this.questTitleEn,this.questTitleZh,divider,...this.questObjTexts])
+    this.questContainer = this.add.container(335 * this.ZOOM, 10 * this.ZOOM, [bg, header, hdrLine, this.questTitleEn, this.questTitleZh, divider, ...this.questObjTexts])
     this.questContainer.setScrollFactor(0).setDepth(100)
     this.updateQuestTracker()
   }
 
   private updateQuestTracker() {
     const quest = gameState.getActiveQuest()
-    if (!quest){this.questContainer.setVisible(false);return}
+    if (!quest) { this.questContainer.setVisible(false); return }
     this.questContainer.setVisible(true)
     this.questTitleEn.setText(quest.title)
     this.questTitleZh.setText(quest.titleZh)
-    quest.objectives.forEach((obj,i)=>{
-      if (i>=this.questObjTexts.length) return
-      this.questObjTexts[i].setText(`${obj.complete?'✓':'○'} ${obj.description}`)
-      this.questObjTexts[i].setColor(obj.complete?'#44ff44':'#aaaaaa')
+    quest.objectives.forEach((obj, i) => {
+      if (i >= this.questObjTexts.length) return
+      this.questObjTexts[i].setText(`${obj.complete ? '✓' : '○'} ${obj.description}`)
+      this.questObjTexts[i].setColor(obj.complete ? '#80d860' : '#a08870')
     })
-    for (let i=quest.objectives.length;i<this.questObjTexts.length;i++) this.questObjTexts[i].setText('')
+    for (let i = quest.objectives.length; i < this.questObjTexts.length; i++) this.questObjTexts[i].setText('')
   }
 
   // ─── Bottom Hotbar ────────────────────────────────────────────────────────
   // 6 slots × 24w world → 48px canvas each; container centered at y=293 world → y=586 canvas
   private createBottomHotbar() {
-    const slotW=24, gap=3, slots=6
-    const totalW = slots*slotW+(slots-1)*gap  // 159 world → 318 canvas
+    const slotW = 24, gap = 3, slots = 6
+    const totalW = slots * slotW + (slots - 1) * gap  // 159 world → 318 canvas
 
     const barBg = this.add.graphics()
-    barBg.fillStyle(0x0d1a0d,0.90).fillRoundedRect(-6,-5,totalW+12,slotW+10,4)
-    barBg.lineStyle(1.5,0x224422,1).strokeRoundedRect(-6,-5,totalW+12,slotW+10,4)
+    barBg.fillStyle(0x0e0a06, 0.92).fillRoundedRect(-6, -5, totalW + 12, slotW + 10, 4)
+    barBg.lineStyle(1.5, 0x5a3810, 1).strokeRoundedRect(-6, -5, totalW + 12, slotW + 10, 4)
+    barBg.lineStyle(1, 0xd4961e, 0.18).strokeRoundedRect(-4, -3, totalW + 8, slotW + 6, 3)
 
     const children: Phaser.GameObjects.GameObject[] = [barBg]
-    for (let i=0;i<slots;i++){
-      const sx=i*(slotW+gap)
+    for (let i = 0; i < slots; i++) {
+      const sx = i * (slotW + gap)
       const s = this.add.graphics()
-      s.fillStyle(0x0a1a0a,1).fillRoundedRect(sx,0,slotW,slotW,2)
-      s.lineStyle(1,0x2a5a2a,1).strokeRoundedRect(sx,0,slotW,slotW,2)
+      s.fillStyle(0x180e06, 1).fillRoundedRect(sx, 0, slotW, slotW, 2)
+      s.lineStyle(1, 0x4a2c10, 1).strokeRoundedRect(sx, 0, slotW, slotW, 2)
       children.push(s)
-      children.push(this.add.text(sx+slotW-2,slotW-2,`${i+1}`,{fontFamily:'VT323',fontSize:'8px',color:'#2a5a2a'}).setOrigin(1,1))
+      children.push(this.add.text(sx + slotW - 2, slotW - 2, `${i + 1}`, { fontFamily: 'VT323', fontSize: '8px', color: '#3a2010' }).setOrigin(1, 1))
     }
-    // y=288 world → canvas 576. barBg local offset -5 → canvas top 566. barBg height 34w → 68c → bottom 634. Within 640 canvas.
-    const hotbar = this.add.container((480-totalW)/2, 288, children)
+    const hotbar = this.add.container((480 - totalW) / 2 * this.ZOOM, 288 * this.ZOOM, children)
     hotbar.setScrollFactor(0).setDepth(100)
 
-    const hint = this.add.text(240,281,'WASD / Arrows  ·  E or Space to talk',{fontFamily:'VT323',fontSize:'10px',color:'#446644',align:'center'}).setOrigin(0.5,1).setScrollFactor(0).setDepth(99)
-    this.tweens.add({targets:hint,alpha:0,duration:1200,delay:5000})
+    const hint = this.add.text(240 * this.ZOOM, 281 * this.ZOOM, 'WASD / Arrows  ·  E or Space to talk', {
+      fontFamily: 'VT323', fontSize: '10px', color: '#6a4828', align: 'center'
+    }).setOrigin(0.5, 1).setScrollFactor(0).setDepth(99)
+    this.tweens.add({ targets: hint, alpha: 0, duration: 1200, delay: 5000 })
   }
 
   // ─── Ambient Effects ──────────────────────────────────────────────────────
   private createAmbientEffects() {
-    this.add.graphics().fillStyle(0xffcc66,0.03).fillRect(0,0,this.MAP_W,this.MAP_H).setDepth(1)
+    // Warm ambient light wash over entire map
+    this.add.graphics().fillStyle(0xff9040, 0.025).fillRect(0, 0, this.MAP_W, this.MAP_H).setDepth(1)
 
+    // Main entrance sign — Singapore-style blue + red top band
+    const signX = 432, signY = 24, signW = 256, signH = 34
     const eBg = this.add.graphics()
-    eBg.fillStyle(0xc0392b,1).fillRect(370,30,220,28)
-    eBg.lineStyle(3,0xf5c842,1).strokeRect(370,30,220,28).setDepth(8)
-    this.add.text(480,44,'小贩中心  HAWKER CENTRE',{fontFamily:'Press Start 2P',fontSize:'7px',color:'#ffffff',stroke:'#000000',strokeThickness:2}).setOrigin(0.5).setDepth(9)
+    eBg.fillStyle(0x0a2860, 1).fillRect(signX, signY, signW, signH)
+    eBg.fillStyle(0xc02820, 1).fillRect(signX, signY, signW, 8)        // red top band
+    eBg.fillStyle(0xffffff, 0.06).fillRect(signX, signY + 8, signW, 4)  // subtle sheen
+    eBg.lineStyle(2, 0xd4a020, 1).strokeRect(signX, signY, signW, signH)
+    eBg.lineStyle(1, 0xd4a020, 0.35).strokeRect(signX + 2, signY + 10, signW - 4, signH - 12)
+    eBg.setDepth(8)
+    this.add.text(signX + signW / 2, signY + signH / 2 + 3, '小贩中心  HAWKER CENTRE', {
+      fontFamily: 'Press Start 2P', fontSize: '6px', color: '#ffffff', stroke: '#000000', strokeThickness: 1
+    }).setOrigin(0.5).setDepth(9)
 
+    // Exit sign — green safety sign style
     const xBg = this.add.graphics()
-    xBg.fillStyle(0x8B4513,1).fillRect(496,680,8,40).fillStyle(0xf5c842,1).fillRect(470,660,60,24)
-    xBg.lineStyle(2,0x8B4513,1).strokeRect(470,660,60,24).setDepth(8)
-    this.add.text(500,672,'出口',{fontFamily:'Press Start 2P',fontSize:'7px',color:'#000000'}).setOrigin(0.5).setDepth(9)
+    xBg.fillStyle(0x0c5828, 1).fillRect(478, 670, 68, 24)
+    xBg.lineStyle(1.5, 0x38c068, 1).strokeRect(478, 670, 68, 24)
+    xBg.setDepth(8)
+    this.add.text(512, 682, '出口  EXIT', {
+      fontFamily: 'Press Start 2P', fontSize: '5px', color: '#ffffff'
+    }).setOrigin(0.5).setDepth(9)
   }
 
   // ─── Update Loop ──────────────────────────────────────────────────────────
@@ -643,9 +712,14 @@ export class WorldScene extends Phaser.Scene {
   }
 
   private positionDialogueBox() {
-    // Canvas target: x=40 (40px left margin), y=362 (box ends at 538, hotbar barBg starts at 566 → 28px gap)
-    // World: x=20, y=181   (world = canvas / zoom2)
-    this.dialogueBox.setPosition(20, 181)
+    // scrollFactor(0): position is direct (no zoom), but children are scaled by camera zoom.
+    // So rendered size = local_size × zoom. Position in canvas px needs / zoom.
+    const uiW = this.cameras.main.width / this.ZOOM   // 480
+    const uiH = this.cameras.main.height / this.ZOOM  // 320
+    const boxW = 360, boxH = 88
+    const x = (uiW - boxW) / 2              // centered horizontally
+    const y = uiH - boxH - 30               // 30 units above bottom
+    this.dialogueBox.setPosition(x, y)
   }
 
   private updateDialogueBox() {
@@ -654,59 +728,59 @@ export class WorldScene extends Phaser.Scene {
 
   // ─── Notifications (world coords, scrollFactor(0)) ────────────────────────
   private showXPGain(amount: number) {
-    // Large gold "+N XP" floats up from center-screen
-    const t = this.add.text(240,190,`+${amount} XP`,{
+    const Z = this.ZOOM
+    const t = this.add.text(240*Z,190*Z,`+${amount} XP`,{
       fontFamily:'VT323',fontSize:'22px',color:'#f5c842',stroke:'#000000',strokeThickness:3
     }).setOrigin(0.5).setScrollFactor(0).setDepth(200)
-    this.tweens.add({targets:t,y:160,alpha:0,duration:1600,ease:'Cubic.Out',onComplete:()=>t.destroy()})
+    this.tweens.add({targets:t,y:160*Z,alpha:0,duration:1600,ease:'Cubic.Out',onComplete:()=>t.destroy()})
   }
 
   private showObjectiveComplete(obj: QuestObjective) {
-    // Green banner at top-center: canvas (120,80) size (720,44) → world (60,40) size (360,22)
-    const bg=this.add.graphics().setScrollFactor(0).setDepth(200)
-    bg.fillStyle(0x031a03,0.95).fillRoundedRect(60,40,360,22,3)
-    bg.lineStyle(2,0x44ff44,1).strokeRoundedRect(60,40,360,22,3)
-    const t=this.add.text(240,51,`✓  OBJECTIVE: ${obj.descZh}`,{
-      fontFamily:'VT323',fontSize:'14px',color:'#44ff44',align:'center'
+    const Z = this.ZOOM
+    const bg = this.add.graphics().setScrollFactor(0).setDepth(200)
+    bg.fillStyle(0x0c0806, 0.96).fillRoundedRect(60, 40, 360, 22, 3)
+    bg.lineStyle(2, 0xd4961e, 1).strokeRoundedRect(60, 40, 360, 22, 3)
+    const t = this.add.text(240*Z, 51*Z, `✓  OBJECTIVE: ${obj.descZh}`, {
+      fontFamily:'VT323', fontSize:'14px', color:'#f0c840', align:'center'
     }).setOrigin(0.5).setScrollFactor(0).setDepth(201)
-    const all=[bg,t]
+    const all = [bg, t]
     this.tweens.add({targets:all,alpha:{from:0,to:1},duration:200,onComplete:()=>
       this.time.delayedCall(2500,()=>this.tweens.add({targets:all,alpha:0,duration:400,onComplete:()=>all.forEach(o=>o.destroy())}))})
   }
 
   private showQuestComplete(quest: Quest) {
-    // Modal: canvas (140,180) size (680,160) → world (70,90) size (340,80)
-    const bg=this.add.graphics().setScrollFactor(0).setDepth(202)
-    bg.fillStyle(0x031a03,0.97).fillRoundedRect(70,90,340,80,6)
-    bg.lineStyle(3,0xf5c842,1).strokeRoundedRect(70,90,340,80,6)
-    bg.lineStyle(1,0xf5c842,0.3).strokeRoundedRect(73,93,334,74,5)
-    const title=this.add.text(240,106,'✦  QUEST COMPLETE!  ✦',{
-      fontFamily:'VT323',fontSize:'18px',color:'#f5c842',stroke:'#000000',strokeThickness:2,align:'center'
+    const Z = this.ZOOM
+    const bg = this.add.graphics().setScrollFactor(0).setDepth(202)
+    bg.fillStyle(0x0c0806, 0.97).fillRoundedRect(70, 90, 340, 80, 6)
+    bg.lineStyle(3, 0xd4961e, 1).strokeRoundedRect(70, 90, 340, 80, 6)
+    bg.lineStyle(1, 0xd4961e, 0.3).strokeRoundedRect(73, 93, 334, 74, 5)
+    const title = this.add.text(240*Z, 106*Z, '✦  QUEST COMPLETE!  ✦', {
+      fontFamily:'VT323', fontSize:'18px', color:'#f0c840', stroke:'#000000', strokeThickness:2, align:'center'
     }).setOrigin(0.5).setScrollFactor(0).setDepth(203)
-    const name=this.add.text(240,124,`${quest.titleZh} · ${quest.title}`,{
-      fontFamily:'VT323',fontSize:'15px',color:'#ffffff',align:'center'
+    const name = this.add.text(240*Z, 124*Z, `${quest.titleZh} · ${quest.title}`, {
+      fontFamily:'VT323', fontSize:'15px', color:'#fff0d0', align:'center'
     }).setOrigin(0.5).setScrollFactor(0).setDepth(203)
-    const rew=this.add.text(240,143,`+${quest.xpReward} XP  +${quest.goldReward} Gold  ·  New quest unlocked!`,{
-      fontFamily:'VT323',fontSize:'13px',color:'#aaffaa',align:'center'
+    const rew = this.add.text(240*Z, 143*Z, `+${quest.xpReward} XP  +${quest.goldReward} Gold  ·  New quest unlocked!`, {
+      fontFamily:'VT323', fontSize:'13px', color:'#c8e8a8', align:'center'
     }).setOrigin(0.5).setScrollFactor(0).setDepth(203)
-    const all=[bg,title,name,rew]
+    const all = [bg, title, name, rew]
     this.tweens.add({targets:all,alpha:{from:0,to:1},scaleX:{from:0.9,to:1},scaleY:{from:0.9,to:1},duration:350,ease:'Back.Out',onComplete:()=>
       this.time.delayedCall(3500,()=>this.tweens.add({targets:all,alpha:0,duration:500,onComplete:()=>all.forEach(o=>o.destroy())}))})
   }
 
   private showLevelUp(level: number) {
-    // Exciting popup: canvas (160,220) size (640,100) → world (80,110) size (320,50)
-    const bg=this.add.graphics().setScrollFactor(0).setDepth(204)
-    bg.fillStyle(0x1a1000,0.97).fillRoundedRect(80,110,320,50,6)
-    bg.lineStyle(3,0xf5c842,1).strokeRoundedRect(80,110,320,50,6)
-    bg.lineStyle(1,0xf5c842,0.4).strokeRoundedRect(83,113,314,44,5)
-    const t=this.add.text(240,126,`★  LEVEL UP!  Lv.${level}  ★`,{
-      fontFamily:'VT323',fontSize:'20px',color:'#f5c842',stroke:'#000000',strokeThickness:3,align:'center'
+    const Z = this.ZOOM
+    const bg = this.add.graphics().setScrollFactor(0).setDepth(204)
+    bg.fillStyle(0x0e0a06, 0.97).fillRoundedRect(80, 110, 320, 50, 6)
+    bg.lineStyle(3, 0xd4961e, 1).strokeRoundedRect(80, 110, 320, 50, 6)
+    bg.lineStyle(1, 0xd4961e, 0.4).strokeRoundedRect(83, 113, 314, 44, 5)
+    const t = this.add.text(240*Z, 126*Z, `★  LEVEL UP!  Lv.${level}  ★`, {
+      fontFamily:'VT323', fontSize:'20px', color:'#f0c840', stroke:'#000000', strokeThickness:3, align:'center'
     }).setOrigin(0.5).setScrollFactor(0).setDepth(205)
-    const s=this.add.text(240,146,'HP +10 · Max HP increased!',{
-      fontFamily:'VT323',fontSize:'14px',color:'#ffffff',align:'center'
+    const s = this.add.text(240*Z, 146*Z, 'HP +10 · Max HP increased!', {
+      fontFamily:'VT323', fontSize:'14px', color:'#fff0d0', align:'center'
     }).setOrigin(0.5).setScrollFactor(0).setDepth(205)
-    const all=[bg,t,s]
+    const all = [bg, t, s]
     this.tweens.add({targets:all,alpha:{from:0,to:1},scaleX:{from:0.8,to:1},scaleY:{from:0.8,to:1},duration:350,ease:'Back.Out',onComplete:()=>
       this.time.delayedCall(2500,()=>this.tweens.add({targets:all,alpha:0,duration:450,onComplete:()=>all.forEach(o=>o.destroy())}))})
   }
