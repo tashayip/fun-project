@@ -431,7 +431,7 @@ export class WorldScene extends Phaser.Scene {
     // Gold
     this.goldText = this.add.text(35,37,'',{fontFamily:'VT323',fontSize:'13px',color:'#f5c842'})
 
-    const panel = this.add.container(6,6,[panelBg,lvlBg,lvlCaption,this.levelBadgeText,hpLabel,hpBg,this.hpBarFill,this.hpValueText,xpLabel,xpBg,this.xpBarFill,this.xpValueText,this.goldText])
+    const panel = this.add.container(246,166,[panelBg,lvlBg,lvlCaption,this.levelBadgeText,hpLabel,hpBg,this.hpBarFill,this.hpValueText,xpLabel,xpBg,this.xpBarFill,this.xpValueText,this.goldText])
     panel.setScrollFactor(0).setDepth(100)
     this.redrawStatusBars()
   }
@@ -478,7 +478,7 @@ export class WorldScene extends Phaser.Scene {
       this.questObjTexts.push(t)
     }
 
-    this.questContainer = this.add.container(360,6,[bg,header,this.questTitleEn,this.questTitleZh,divider,...this.questObjTexts])
+    this.questContainer = this.add.container(600,166,[bg,header,this.questTitleEn,this.questTitleZh,divider,...this.questObjTexts])
     this.questContainer.setScrollFactor(0).setDepth(100)
     this.updateQuestTracker()
   }
@@ -517,10 +517,10 @@ export class WorldScene extends Phaser.Scene {
       children.push(this.add.text(sx+slotW-2,slotW-2,`${i+1}`,{fontFamily:'VT323',fontSize:'8px',color:'#2a5a2a'}).setOrigin(1,1))
     }
     // y=288 world → canvas 576. barBg local offset -5 → canvas top 566. barBg height 34w → 68c → bottom 634. Within 640 canvas.
-    const hotbar = this.add.container((480-totalW)/2, 288, children)
+    const hotbar = this.add.container((480-totalW)/2 + 240, 448, children)
     hotbar.setScrollFactor(0).setDepth(100)
 
-    const hint = this.add.text(240,281,'WASD / Arrows  ·  E or Space to talk',{fontFamily:'VT323',fontSize:'10px',color:'#446644',align:'center'}).setOrigin(0.5,1).setScrollFactor(0).setDepth(99)
+    const hint = this.add.text(480,441,'WASD / Arrows  ·  E or Space to talk',{fontFamily:'VT323',fontSize:'10px',color:'#446644',align:'center'}).setOrigin(0.5,1).setScrollFactor(0).setDepth(99)
     this.tweens.add({targets:hint,alpha:0,duration:1200,delay:5000})
   }
 
@@ -645,7 +645,7 @@ export class WorldScene extends Phaser.Scene {
   private positionDialogueBox() {
     // Canvas target: x=40 (40px left margin), y=362 (box ends at 538, hotbar barBg starts at 566 → 28px gap)
     // World: x=20, y=181   (world = canvas / zoom2)
-    this.dialogueBox.setPosition(20, 181)
+    this.dialogueBox.setPosition(260, 341)
   }
 
   private updateDialogueBox() {
@@ -655,18 +655,18 @@ export class WorldScene extends Phaser.Scene {
   // ─── Notifications (world coords, scrollFactor(0)) ────────────────────────
   private showXPGain(amount: number) {
     // Large gold "+N XP" floats up from center-screen
-    const t = this.add.text(240,190,`+${amount} XP`,{
+    const t = this.add.text(480,350,`+${amount} XP`,{
       fontFamily:'VT323',fontSize:'22px',color:'#f5c842',stroke:'#000000',strokeThickness:3
     }).setOrigin(0.5).setScrollFactor(0).setDepth(200)
-    this.tweens.add({targets:t,y:160,alpha:0,duration:1600,ease:'Cubic.Out',onComplete:()=>t.destroy()})
+    this.tweens.add({targets:t,y:320,alpha:0,duration:1600,ease:'Cubic.Out',onComplete:()=>t.destroy()})
   }
 
   private showObjectiveComplete(obj: QuestObjective) {
     // Green banner at top-center: canvas (120,80) size (720,44) → world (60,40) size (360,22)
     const bg=this.add.graphics().setScrollFactor(0).setDepth(200)
-    bg.fillStyle(0x031a03,0.95).fillRoundedRect(60,40,360,22,3)
-    bg.lineStyle(2,0x44ff44,1).strokeRoundedRect(60,40,360,22,3)
-    const t=this.add.text(240,51,`✓  OBJECTIVE: ${obj.descZh}`,{
+    bg.fillStyle(0x031a03,0.95).fillRoundedRect(300,200,360,22,3)
+    bg.lineStyle(2,0x44ff44,1).strokeRoundedRect(300,200,360,22,3)
+    const t=this.add.text(480,211,`✓  OBJECTIVE: ${obj.descZh}`,{
       fontFamily:'VT323',fontSize:'14px',color:'#44ff44',align:'center'
     }).setOrigin(0.5).setScrollFactor(0).setDepth(201)
     const all=[bg,t]
@@ -677,16 +677,16 @@ export class WorldScene extends Phaser.Scene {
   private showQuestComplete(quest: Quest) {
     // Modal: canvas (140,180) size (680,160) → world (70,90) size (340,80)
     const bg=this.add.graphics().setScrollFactor(0).setDepth(202)
-    bg.fillStyle(0x031a03,0.97).fillRoundedRect(70,90,340,80,6)
-    bg.lineStyle(3,0xf5c842,1).strokeRoundedRect(70,90,340,80,6)
-    bg.lineStyle(1,0xf5c842,0.3).strokeRoundedRect(73,93,334,74,5)
-    const title=this.add.text(240,106,'✦  QUEST COMPLETE!  ✦',{
+    bg.fillStyle(0x031a03,0.97).fillRoundedRect(310,250,340,80,6)
+    bg.lineStyle(3,0xf5c842,1).strokeRoundedRect(310,250,340,80,6)
+    bg.lineStyle(1,0xf5c842,0.3).strokeRoundedRect(313,253,334,74,5)
+    const title=this.add.text(480,266,'✦  QUEST COMPLETE!  ✦',{
       fontFamily:'VT323',fontSize:'18px',color:'#f5c842',stroke:'#000000',strokeThickness:2,align:'center'
     }).setOrigin(0.5).setScrollFactor(0).setDepth(203)
-    const name=this.add.text(240,124,`${quest.titleZh} · ${quest.title}`,{
+    const name=this.add.text(480,284,`${quest.titleZh} · ${quest.title}`,{
       fontFamily:'VT323',fontSize:'15px',color:'#ffffff',align:'center'
     }).setOrigin(0.5).setScrollFactor(0).setDepth(203)
-    const rew=this.add.text(240,143,`+${quest.xpReward} XP  +${quest.goldReward} Gold  ·  New quest unlocked!`,{
+    const rew=this.add.text(480,303,`+${quest.xpReward} XP  +${quest.goldReward} Gold  ·  New quest unlocked!`,{
       fontFamily:'VT323',fontSize:'13px',color:'#aaffaa',align:'center'
     }).setOrigin(0.5).setScrollFactor(0).setDepth(203)
     const all=[bg,title,name,rew]
@@ -697,13 +697,13 @@ export class WorldScene extends Phaser.Scene {
   private showLevelUp(level: number) {
     // Exciting popup: canvas (160,220) size (640,100) → world (80,110) size (320,50)
     const bg=this.add.graphics().setScrollFactor(0).setDepth(204)
-    bg.fillStyle(0x1a1000,0.97).fillRoundedRect(80,110,320,50,6)
-    bg.lineStyle(3,0xf5c842,1).strokeRoundedRect(80,110,320,50,6)
-    bg.lineStyle(1,0xf5c842,0.4).strokeRoundedRect(83,113,314,44,5)
-    const t=this.add.text(240,126,`★  LEVEL UP!  Lv.${level}  ★`,{
+    bg.fillStyle(0x1a1000,0.97).fillRoundedRect(320,270,320,50,6)
+    bg.lineStyle(3,0xf5c842,1).strokeRoundedRect(320,270,320,50,6)
+    bg.lineStyle(1,0xf5c842,0.4).strokeRoundedRect(323,273,314,44,5)
+    const t=this.add.text(480,286,`★  LEVEL UP!  Lv.${level}  ★`,{
       fontFamily:'VT323',fontSize:'20px',color:'#f5c842',stroke:'#000000',strokeThickness:3,align:'center'
     }).setOrigin(0.5).setScrollFactor(0).setDepth(205)
-    const s=this.add.text(240,146,'HP +10 · Max HP increased!',{
+    const s=this.add.text(480,306,'HP +10 · Max HP increased!',{
       fontFamily:'VT323',fontSize:'14px',color:'#ffffff',align:'center'
     }).setOrigin(0.5).setScrollFactor(0).setDepth(205)
     const all=[bg,t,s]
