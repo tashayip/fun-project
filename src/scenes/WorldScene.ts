@@ -468,7 +468,7 @@ export class WorldScene extends Phaser.Scene {
     // Gold counter
     this.goldText = this.add.text(36, 38, '', { fontFamily: 'VT323', fontSize: '13px', color: '#f0c840' })
 
-    const panel = this.add.container(30 * this.ZOOM, 10 * this.ZOOM, [
+    const panel = this.add.container(246, 166, [
       panelBg, lvlBg, lvlCaption, this.levelBadgeText,
       hpLabel, hpBg, this.hpBarFill, this.hpValueText,
       xpLabel, xpBg, this.xpBarFill, this.xpValueText,
@@ -532,7 +532,7 @@ export class WorldScene extends Phaser.Scene {
       this.questObjTexts.push(t)
     }
 
-    this.questContainer = this.add.container(335 * this.ZOOM, 10 * this.ZOOM, [bg, header, hdrLine, this.questTitleEn, this.questTitleZh, divider, ...this.questObjTexts])
+    this.questContainer = this.add.container(600, 166, [bg, header, hdrLine, this.questTitleEn, this.questTitleZh, divider, ...this.questObjTexts])
     this.questContainer.setScrollFactor(0).setDepth(100)
     this.updateQuestTracker()
   }
@@ -571,10 +571,10 @@ export class WorldScene extends Phaser.Scene {
       children.push(s)
       children.push(this.add.text(sx + slotW - 2, slotW - 2, `${i + 1}`, { fontFamily: 'VT323', fontSize: '8px', color: '#3a2010' }).setOrigin(1, 1))
     }
-    const hotbar = this.add.container((480 - totalW) / 2 * this.ZOOM, 288 * this.ZOOM, children)
+    const hotbar = this.add.container((480 - totalW) / 2 + 240, 448, children)
     hotbar.setScrollFactor(0).setDepth(100)
 
-    const hint = this.add.text(240 * this.ZOOM, 281 * this.ZOOM, 'WASD / Arrows  ·  E or Space to talk', {
+    const hint = this.add.text(480, 441, 'WASD / Arrows  ·  E or Space to talk', {
       fontFamily: 'VT323', fontSize: '10px', color: '#6a4828', align: 'center'
     }).setOrigin(0.5, 1).setScrollFactor(0).setDepth(99)
     this.tweens.add({ targets: hint, alpha: 0, duration: 1200, delay: 5000 })
@@ -712,14 +712,7 @@ export class WorldScene extends Phaser.Scene {
   }
 
   private positionDialogueBox() {
-    // scrollFactor(0): position is direct (no zoom), but children are scaled by camera zoom.
-    // So rendered size = local_size × zoom. Position in canvas px needs / zoom.
-    const uiW = this.cameras.main.width / this.ZOOM   // 480
-    const uiH = this.cameras.main.height / this.ZOOM  // 320
-    const boxW = 360, boxH = 88
-    const x = (uiW - boxW) / 2              // centered horizontally
-    const y = uiH - boxH - 30               // 30 units above bottom
-    this.dialogueBox.setPosition(x, y)
+    this.dialogueBox.setPosition(260, 341)
   }
 
   private updateDialogueBox() {
@@ -728,20 +721,18 @@ export class WorldScene extends Phaser.Scene {
 
   // ─── Notifications (world coords, scrollFactor(0)) ────────────────────────
   private showXPGain(amount: number) {
-    const Z = this.ZOOM
-    const t = this.add.text(240*Z,190*Z,`+${amount} XP`,{
-      fontFamily:'VT323',fontSize:'22px',color:'#f5c842',stroke:'#000000',strokeThickness:3
+    const t = this.add.text(480, 350, `+${amount} XP`, {
+      fontFamily: 'VT323', fontSize: '22px', color: '#f5c842', stroke: '#000000', strokeThickness: 3
     }).setOrigin(0.5).setScrollFactor(0).setDepth(200)
-    this.tweens.add({targets:t,y:160*Z,alpha:0,duration:1600,ease:'Cubic.Out',onComplete:()=>t.destroy()})
+    this.tweens.add({ targets: t, y: 320, alpha: 0, duration: 1600, ease: 'Cubic.Out', onComplete: () => t.destroy() })
   }
 
   private showObjectiveComplete(obj: QuestObjective) {
-    const Z = this.ZOOM
     const bg = this.add.graphics().setScrollFactor(0).setDepth(200)
-    bg.fillStyle(0x0c0806, 0.96).fillRoundedRect(60, 40, 360, 22, 3)
-    bg.lineStyle(2, 0xd4961e, 1).strokeRoundedRect(60, 40, 360, 22, 3)
-    const t = this.add.text(240*Z, 51*Z, `✓  OBJECTIVE: ${obj.descZh}`, {
-      fontFamily:'VT323', fontSize:'14px', color:'#f0c840', align:'center'
+    bg.fillStyle(0x0c0806, 0.96).fillRoundedRect(300, 200, 360, 22, 3)
+    bg.lineStyle(2, 0xd4961e, 1).strokeRoundedRect(300, 200, 360, 22, 3)
+    const t = this.add.text(480, 211, `✓  OBJECTIVE: ${obj.descZh}`, {
+      fontFamily: 'VT323', fontSize: '14px', color: '#f0c840', align: 'center'
     }).setOrigin(0.5).setScrollFactor(0).setDepth(201)
     const all = [bg, t]
     this.tweens.add({targets:all,alpha:{from:0,to:1},duration:200,onComplete:()=>
@@ -749,19 +740,18 @@ export class WorldScene extends Phaser.Scene {
   }
 
   private showQuestComplete(quest: Quest) {
-    const Z = this.ZOOM
     const bg = this.add.graphics().setScrollFactor(0).setDepth(202)
-    bg.fillStyle(0x0c0806, 0.97).fillRoundedRect(70, 90, 340, 80, 6)
-    bg.lineStyle(3, 0xd4961e, 1).strokeRoundedRect(70, 90, 340, 80, 6)
-    bg.lineStyle(1, 0xd4961e, 0.3).strokeRoundedRect(73, 93, 334, 74, 5)
-    const title = this.add.text(240*Z, 106*Z, '✦  QUEST COMPLETE!  ✦', {
-      fontFamily:'VT323', fontSize:'18px', color:'#f0c840', stroke:'#000000', strokeThickness:2, align:'center'
+    bg.fillStyle(0x0c0806, 0.97).fillRoundedRect(310, 250, 340, 80, 6)
+    bg.lineStyle(3, 0xd4961e, 1).strokeRoundedRect(310, 250, 340, 80, 6)
+    bg.lineStyle(1, 0xd4961e, 0.3).strokeRoundedRect(313, 253, 334, 74, 5)
+    const title = this.add.text(480, 266, '✦  QUEST COMPLETE!  ✦', {
+      fontFamily: 'VT323', fontSize: '18px', color: '#f0c840', stroke: '#000000', strokeThickness: 2, align: 'center'
     }).setOrigin(0.5).setScrollFactor(0).setDepth(203)
-    const name = this.add.text(240*Z, 124*Z, `${quest.titleZh} · ${quest.title}`, {
-      fontFamily:'VT323', fontSize:'15px', color:'#fff0d0', align:'center'
+    const name = this.add.text(480, 284, `${quest.titleZh} · ${quest.title}`, {
+      fontFamily: 'VT323', fontSize: '15px', color: '#fff0d0', align: 'center'
     }).setOrigin(0.5).setScrollFactor(0).setDepth(203)
-    const rew = this.add.text(240*Z, 143*Z, `+${quest.xpReward} XP  +${quest.goldReward} Gold  ·  New quest unlocked!`, {
-      fontFamily:'VT323', fontSize:'13px', color:'#c8e8a8', align:'center'
+    const rew = this.add.text(480, 303, `+${quest.xpReward} XP  +${quest.goldReward} Gold  ·  New quest unlocked!`, {
+      fontFamily: 'VT323', fontSize: '13px', color: '#c8e8a8', align: 'center'
     }).setOrigin(0.5).setScrollFactor(0).setDepth(203)
     const all = [bg, title, name, rew]
     this.tweens.add({targets:all,alpha:{from:0,to:1},scaleX:{from:0.9,to:1},scaleY:{from:0.9,to:1},duration:350,ease:'Back.Out',onComplete:()=>
@@ -769,16 +759,15 @@ export class WorldScene extends Phaser.Scene {
   }
 
   private showLevelUp(level: number) {
-    const Z = this.ZOOM
     const bg = this.add.graphics().setScrollFactor(0).setDepth(204)
-    bg.fillStyle(0x0e0a06, 0.97).fillRoundedRect(80, 110, 320, 50, 6)
-    bg.lineStyle(3, 0xd4961e, 1).strokeRoundedRect(80, 110, 320, 50, 6)
-    bg.lineStyle(1, 0xd4961e, 0.4).strokeRoundedRect(83, 113, 314, 44, 5)
-    const t = this.add.text(240*Z, 126*Z, `★  LEVEL UP!  Lv.${level}  ★`, {
-      fontFamily:'VT323', fontSize:'20px', color:'#f0c840', stroke:'#000000', strokeThickness:3, align:'center'
+    bg.fillStyle(0x0e0a06, 0.97).fillRoundedRect(320, 270, 320, 50, 6)
+    bg.lineStyle(3, 0xd4961e, 1).strokeRoundedRect(320, 270, 320, 50, 6)
+    bg.lineStyle(1, 0xd4961e, 0.4).strokeRoundedRect(323, 273, 314, 44, 5)
+    const t = this.add.text(480, 286, `★  LEVEL UP!  Lv.${level}  ★`, {
+      fontFamily: 'VT323', fontSize: '20px', color: '#f0c840', stroke: '#000000', strokeThickness: 3, align: 'center'
     }).setOrigin(0.5).setScrollFactor(0).setDepth(205)
-    const s = this.add.text(240*Z, 146*Z, 'HP +10 · Max HP increased!', {
-      fontFamily:'VT323', fontSize:'14px', color:'#fff0d0', align:'center'
+    const s = this.add.text(480, 306, 'HP +10 · Max HP increased!', {
+      fontFamily: 'VT323', fontSize: '14px', color: '#fff0d0', align: 'center'
     }).setOrigin(0.5).setScrollFactor(0).setDepth(205)
     const all = [bg, t, s]
     this.tweens.add({targets:all,alpha:{from:0,to:1},scaleX:{from:0.8,to:1},scaleY:{from:0.8,to:1},duration:350,ease:'Back.Out',onComplete:()=>
